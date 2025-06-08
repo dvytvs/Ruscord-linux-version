@@ -1,0 +1,33 @@
+# system files
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.lock
+*~
+
+# Node
+node_modules/
+package-lock.json
+.cache/
+dist/
+build/
+out/
+release/
+tmp/
+*.asar
+
+# IDE
+.vscode/
+.idea/
+
+# packages
+*.zip
+*.tar.gz
+*.AppImage
+*.deb
+*.rpm
+*.snap
+
+# Auto-updater
+pending/
