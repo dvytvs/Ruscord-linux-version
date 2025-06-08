@@ -1,0 +1,20 @@
+directories:
+  output: dist
+  buildResources: build
+appId: com.ruscord.linux
+publish:
+  provider: github
+  owner: dvytvs
+  repo: Ruscord-linux-version
+productName: Ruscord
+files:
+  - filter:
+      - '**/*'
+linux:
+  target:
+    - AppImage
+    - deb
+  icon: assets/icon.png
+  category: Network
+  maintainer: dvytvs <zapretsystem445@proton.me>, XZY <xzywww@proton.me>
+electronVersion: 36.4.0
