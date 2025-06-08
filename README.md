@@ -29,5 +29,5 @@ dvytvs с XZY123lol сделали клиент для пользователе�
 
 ```bash
 git clone https://github.com/dvytvs/Ruscord-linux-version
-cd ruscord
+cd Ruscord-linux-version
 npm install
