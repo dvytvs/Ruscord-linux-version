@@ -1,12 +1,12 @@
 version: 1.0.0
 files:
   - url: Ruscord-1.0.0.AppImage
-    sha512: oZfgUhvIPxqH5ZhyIMPAODI1dvQHPgmBabacdKC1L4hkVB0k6zMD0Yv6nWUdhH/fGsGuYNh32mu1kFVs2TwuBQ==
-    size: 114128221
-    blockMapSize: 120177
+    sha512: 7OpN6VMUpr0aJ4J6y4MZ5lqchGa7Ofkz5Csvu8ElyBPRIu3oQzXsf6UvMsvLueMA3B4ynuwGr/Xq3o5VLSq5kw==
+    size: 114132295
+    blockMapSize: 120155
   - url: Ruscord_1.0.0_amd64.deb
-    sha512: lXfns97fTLGcnPvsBqtXc/5NW4dhvLh1/3+0+0hx8lBQEx+8FgpshXEegAzDsjCaP6Th8EPK8HVCdJ3+JCZ8eQ==
-    size: 78903770
+    sha512: A7Cu3z0BU/6bo6Hlsql27qb9fs6RN8ywpwRsSM+5ZJT8yPcKhpAvws75Ed/dhN7N7hoFZqFgdeV0OLCJanbm4Q==
+    size: 80872788
 path: Ruscord-1.0.0.AppImage
-sha512: oZfgUhvIPxqH5ZhyIMPAODI1dvQHPgmBabacdKC1L4hkVB0k6zMD0Yv6nWUdhH/fGsGuYNh32mu1kFVs2TwuBQ==
-releaseDate: '2025-06-08T09:03:03.079Z'
+sha512: 7OpN6VMUpr0aJ4J6y4MZ5lqchGa7Ofkz5Csvu8ElyBPRIu3oQzXsf6UvMsvLueMA3B4ynuwGr/Xq3o5VLSq5kw==
+releaseDate: '2025-06-08T14:52:19.768Z'
