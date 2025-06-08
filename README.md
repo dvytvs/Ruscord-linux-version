@@ -1,4 +1,5 @@
 ## Ruscord client on Linux
+[![72-20250608152750.png](https://i.postimg.cc/sDFWM0H2/72-20250608152750.png)](https://postimg.cc/WtnzKSvR)
 dvytvs с XZY123lol сделали клиент для пользователей Linux
 
 
