@@ -1,6 +1,6 @@
 {
   "name": "Ruscord",
-  "version": "1.0.0",
+  "version": "1.2.2",
   "description": "Общайся и играй с друзьями в Ruscord",
   "homepage": "https://github.com/dvytvs/Ruscord-linux-version",
   "main": "main.js",
@@ -22,7 +22,9 @@
     "linux": {
       "target": [
         "AppImage",
-        "deb"
+        "deb",
+        "rpm",
+        "tar.xz"
       ],
       "icon": "assets/icon.png",
       "category": "Network",
