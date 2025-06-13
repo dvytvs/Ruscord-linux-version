@@ -2,7 +2,7 @@
   "name": "Ruscord",
   "version": "1.2.2",
   "description": "Общайся и играй с друзьями в Ruscord",
-  "homepage": "https://github.com/dvyt/Ruscord-linux-version",
+  "homepage": "https://github.com/dvytvs/Ruscord-linux-version",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -16,7 +16,7 @@
     "appId": "com.ruscord.linux",
     "publish": {
       "provider": "github",
-      "owner": "dvyt",
+      "owner": "dvytvs",
       "repo": "Ruscord-linux-version"
     },
     "productName": "Ruscord",
@@ -31,27 +31,27 @@
       "target": ["AppImage", "deb", "rpm", "tar.gz"],
       "icon": "assets/icon.png",
       "category": "Network",
-      "maintainer": "dvyt <zapretsystem445@proton.me>, XZY <zzywww@proton.me>",
+      "maintainer": "dvytvs <zapretsystem445@proton.me>, XZY <zzywww@proton.me>",
       "desktop": {
         "Name": "Ruscord",
-        "Comment": "Free and open-source communication platform",
+        "Comment": "Общайся и играй с друзьями в Ruscord",
         "Type": "Application",
         "Categories": "Network;Chat;"
       }
     },
     "author": {
-      "name": "dvyt, XZY",
+      "name": "dvytvs, XZY",
       "email": "zapretsystem445@proton.me"
     },
     "license": "AGPLv3",
     "repository": {
       "type": "git",
-      "url": "https://github.com/dvyt/Ruscord-linux-version.git"
+      "url": "https://github.com/dvytvs/Ruscord-linux-version.git"
     },
     "bugs": {
-      "url": "https://github.com/dvyt/Ruscord-linux-version/issues"
+      "url": "https://github.com/dvytvs/Ruscord-linux-version/issues"
     },
-    "keywords": ["ruscord", "electron", "linux", "chat", "gaming", "open-source", "agplv3","russcord"],
+    "keywords": ["ruscord","chat","russcord"],
     "engines": {
       "node": ">=20.0.0"
     },
