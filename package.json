@@ -13,7 +13,7 @@
     "test": "jest"
   },
   "build": {
-    "appId": "com.ruscord.linux",
+    "appId": "ru.ruscord.linux",
     "publish": {
       "provider": "github",
       "owner": "dvytvs",
