@@ -1,7 +1,7 @@
 ## RCLinux
 <p align="center">
-  <a href="https://postimg.cc/7GFxM3mz">
-    <img src="https://i.postimg.cc/8c5jGwvZ/logo.png" alt="logo.png" />
+  <a href="https://github.com/dvytvs/Ruscord-linux-version/blob/main/assets/logo.png">
+    <img src="https://github.com/dvytvs/Ruscord-linux-version/blob/main/assets/logo.png" alt="logo.png" />
   </a>
 </p>
 <p align="center">
