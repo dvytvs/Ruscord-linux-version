@@ -1,109 +1,80 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, net } from 'electron';
 import path from 'path';
-import fs from 'fs/promises';
-import log from 'electron-log';
-import { autoUpdater } from 'electron-updater';
+import Store from 'electron-store';
 
-let splashWindow;
-let mainWindow;
+const store = new Store();
+let splashWin;
+let mainWin;
 
-async function createSplash() {
-  splashWindow = new BrowserWindow({
+function createSplashWindow() {
+  splashWin = new BrowserWindow({
     width: 400,
     height: 300,
     frame: false,
+    resizable: false,
     transparent: false,
     backgroundColor: '#121212',
-    resizable: false,
     webPreferences: {
-      preload: path.join(__dirname, 'assets', 'code', 'preload.js'),
       contextIsolation: true,
-      sandbox: true
+      preload: path.join(__dirname, 'preload.js')
     }
   });
-  splashWindow.loadFile(path.join(__dirname, 'assets', 'code', 'html', 'splash.html'));
+
+  splashWin.loadFile(path.join(__dirname, 'assets', 'code', 'html', 'splash.html'));
 }
 
-async function createMain() {
-  mainWindow = new BrowserWindow({
+function createMainWindow() {
+  mainWin = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    backgroundColor: '#121212',
     icon: path.join(__dirname, 'assets', 'Images', 'winicon.png'),
+    backgroundColor: '#121212',
     webPreferences: {
-      preload: path.join(__dirname, 'assets', 'code', 'preload.js'),
       contextIsolation: true,
-      sandbox: true
+      preload: path.join(__dirname, 'preload.js')
     }
   });
-  mainWindow.loadURL('https://app.russcord.ru');
+
+  mainWin.loadURL('https://app.russcord.ru');
 }
 
-async function checkConnection() {
-  try {
-    const response = await fetch('https://app.russcord.ru', { method: 'HEAD', timeout: 3000 });
-    return response.ok;
-  } catch {
-    return false;
-  }
+async function checkInternet() {
+  return new Promise(resolve => {
+    const req = net.request('https://app.russcord.ru');
+    req.on('response', () => resolve(true));
+    req.on('error', () => resolve(false));
+    req.end();
+  });
 }
 
-app.whenReady().then(async () => {
-  await createSplash();
+app.whenReady().then(() => {
+  createSplashWindow();
 
-  let connected = false;
-  while (!connected) {
-    connected = await checkConnection();
-    if (connected) {
-      splashWindow.webContents.send('connection-status', true);
-    } else {
-      splashWindow.webContents.send('connection-status', false);
-      await new Promise(resolve => setTimeout(resolve, 2000));
+  (async function waitForConnection() {
+    let connected = false;
+    while (!connected) {
+      connected = await checkInternet();
+      splashWin.webContents.send('connection-status', connected);
+      if (!connected) {
+        await new Promise(r => setTimeout(r, 2000));
+      }
     }
-  }
 
-  autoUpdater.logger = log;
-  autoUpdater.checkForUpdatesAndNotify();
+    splashWin.webContents.send('connection-status', true);
 
-  autoUpdater.on('update-available', info => {
-    splashWindow.webContents.send('update-available', info.version);
-  });
-
-  autoUpdater.on('download-progress', progress => {
-    splashWindow.webContents.send('update-progress', {
-      percent: progress.percent,
-      transferred: progress.transferred,
-      total: progress.total
-    });
-  });
-
-  autoUpdater.on('update-downloaded', () => {
-    splashWindow.webContents.send('update-downloaded');
-    const choice = dialog.showMessageBoxSync({
-      type: 'question',
-      buttons: ['Перезапустить', 'Позже'],
-      title: 'Обновление',
-      message: 'Обновление загружено. Перезапустить сейчас?'
-    });
-    if (choice === 0) {
-      autoUpdater.quitAndInstall();
-    }
-  });
-
-  autoUpdater.on('error', error => {
-    splashWindow.webContents.send('update-error', error.message);
-  });
-
-  // Небольшая задержка для финального экрана
-  setTimeout(async () => {
-    await createMain();
-    splashWindow.close();
-  }, 1500);
+    // задержка для визуального эффекта
+    setTimeout(() => {
+      createMainWindow();
+      splashWin.close();
+    }, 1000);
+  })();
 });
 
-ipcMain.handle('check-connection', () => checkConnection());
+ipcMain.handle('check-connection', async () => {
+  return await checkInternet();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
