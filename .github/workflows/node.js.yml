@@ -1,4 +1,4 @@
-name: Node.js CI Build
+name: Ruscord Node.js CI Linux Build
 
 on:
   push:
@@ -16,35 +16,56 @@ jobs:
         node-version: [20.x]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: sudo apt-get update && sudo apt-get install -y binutils
-      - run: npm install eslint@latest --save-dev
-      - run: npm install --no-audit --no-fund
-      - run: npm ci --no-audit --no-fund
-      - run: npm run dist
-      - uses: actions/upload-artifact@v4
+
+      - name: Install binutils (для fpm)
+        run: sudo apt-get update && sudo apt-get install -y binutils
+
+      - name: Install dependencies
+        run: npm install eslint@latest --save-dev
+
+      - name: Install npm packages (без ```audit``` и ```fund```)
+        run: npm install --no-audit --no-fund
+
+      - name: Build distributable (.deb)
+        run: npm run dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: ruscord-ubuntu
-          path: dist/**/*
+          path: dist/*.deb
 
   build-debian:
     runs-on: ubuntu-latest
     container:
       image: debian:bullseye
     steps:
-      - run: apt-get update && apt-get install -y curl git ca-certificates sudo
-      - run: curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-      - run: apt-get install -y nodejs
+      - name: Install dependencies in container
+        run: |
+          apt-get update
+          apt-get install -y curl git ca-certificates binutils sudo
+          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+          apt-get install -y nodejs
+
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y binutils
-      - run: npm install eslint@latest --save-dev
-      - run: npm install --no-audit --no-fund
-      - run: npm ci --no-audit --no-fund
-      - run: npm run dist
-      - uses: actions/upload-artifact@v4
+
+      - name: Install dependencies
+        run: npm install eslint@latest --save-dev
+
+      - name: Install npm packages
+        run: npm install --no-audit --no-fund
+
+      - name: Build distributable (.deb)
+        run: npm run dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: ruscord-debian
-          path: dist/**/*
-          
+          path: dist/*.deb
+
