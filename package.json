@@ -28,7 +28,6 @@
         "AppImage",
         "snap"
       ],
-      "arch": ["x64", "ia32"],
       "icon": "assets/icon.png",
       "category": "Chat",
       "maintainer": "dvytvs <zapretsystem445@proton.me>",
