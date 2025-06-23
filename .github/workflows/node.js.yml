@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: npm install eslint@latest --save-dev
 
-      - name: Install npm packages (без ```audit``` и ```fund```)
+      - name: Install npm packages (без audit и fund)
         run: npm install --no-audit --no-fund
 
       - name: Build distributable (.deb)
