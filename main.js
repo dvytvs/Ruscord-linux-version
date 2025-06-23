@@ -197,7 +197,7 @@ function showAboutWindow(parentWindow) {
     }
   });
 
-  aboutWin.loadFile(path.join(__dirname, 'about.html'));
+  aboutWin.loadFile(path.join(__dirname, 'assets', 'html', 'about.html'));
   aboutWin.setMenu(null);
 
   // Безопасная обработка внешних ссылок
