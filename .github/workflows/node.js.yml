@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: debian:bullseye
+
     steps:
       - name: Установить зависимости в контейнер
         run: |
@@ -21,9 +22,10 @@ jobs:
           curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
           apt-get install -y nodejs
 
-      - uses: actions/checkout@v4
+      - name: Клонирование репозитория
+        uses: actions/checkout@v4
 
-      - name: Установка eslint последней версии
+      - name: Установка библиотек последней версии
         run: npm install eslint@latest --save-dev
 
       - name: Установка npm пакетов (без audit и fund)
@@ -33,14 +35,13 @@ jobs:
         run: npm run dist
 
       - name: Загрузка артефактов
-      uses: actions/upload-artifact@v4
-      with:
-      name: ruscord-linux
-      path: |
-      dist/*.deb
-      dist/*.rpm
-      dist/*.pacman
-      dist/*.AppImage
-      dist/*.snap
-      dist/*-latest.yml
-      
+        uses: actions/upload-artifact@v4
+        with:
+          name: ruscord-linux
+          path: |
+            dist/*.deb
+            dist/*.rpm
+            dist/*.pacman
+            dist/*.AppImage
+            dist/*.snap
+            dist/*-latest.yml
