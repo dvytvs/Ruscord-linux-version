@@ -28,6 +28,7 @@
         "AppImage",
         "snap"
       ],
+      "arch": ["x64", "ia32"],
       "icon": "assets/icon.png",
       "category": "Network",
       "maintainer": "dvytvs <zapretsystem445@proton.me>",
