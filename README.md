@@ -1,4 +1,4 @@
-## Ruscord клиент на Linux
+## Ruscord клиент на Linux (RCLinux)
 <p align="center">
   <a href="https://postimg.cc/7GFxM3mz">
     <img src="https://i.postimg.cc/8c5jGwvZ/logo.png" alt="logo.png" />
