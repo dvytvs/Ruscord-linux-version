@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Splash from './components/Splash'
-import TabBar from './components/TabBar'
 import SettingsPanel from './components/SettingsPanel'
+import TabBar from './components/TabBar'
 
 export default function App() {
   const [connected, setConnected] = useState(false)
@@ -12,9 +12,9 @@ export default function App() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#121212]">
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#121212' }}>
       <TabBar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div className="flex-1">
+      <div style={{ flexGrow: 1, position: 'relative' }}>
         {activeTab === 'site' && (
           <webview
             src="https://app.russcord.ru"
@@ -23,14 +23,14 @@ export default function App() {
           />
         )}
         {activeTab === 'settings' && (
-          <div className="p-4 bg-[#1e1e1e] rounded">
+          <div style={{ padding: 16 }}>
             <SettingsPanel />
           </div>
         )}
         {activeTab === 'addons' && (
-          <div className="p-4 bg-[#1e1e1e] rounded text-white">
-            <h2 className="text-lg font-bold mb-2">Дополнения</h2>
-            <p className="text-[#98a095]">Функция дополнений находится в разработке. Следите за обновлениями!</p>
+          <div style={{ padding: 16, color: 'white' }}>
+            <h2>Дополнения</h2>
+            <p>Функция дополнений находится в разработке. Следите за обновлениями!</p>
           </div>
         )}
       </div>
