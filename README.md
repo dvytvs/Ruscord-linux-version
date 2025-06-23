@@ -4,15 +4,31 @@
     <img src="https://i.postimg.cc/8c5jGwvZ/logo.png" alt="logo.png" />
   </a>
 </p>
+<p align="center">
+  <a href="https://github.com/dvytvs/Ruscord-linux-version/actions/workflows/node.js.yml">
+    <img src="https://github.com/dvytvs/Ruscord-linux-version/actions/workflows/node.js.yml/badge.svg" alt="Build Status" />
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/dvytvs/Ruscord-linux-version/commits/main">
+  <img src="https://img.shields.io/github/last-commit/dvytvs/Ruscord-linux-version/main" alt="Последний коммит" />
+</a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/dvytvs/Ruscord-linux-version/issues">
+    <img src="https://img.shields.io/github/issues/dvytvs/Ruscord-linux-version.svg" alt="GitHub issues" />
+  </a>
+</p>
 
 XZY123lol и dvytvs сделали для вас отдельный клиент Ruscord только для Linux!
 
 Чтобы скачать билд зайдите в ```Releases``` и оттуда выберите ваш пакет который предназначен для дистрибутива если его нет напишите нам в ```issues```
 
-## На случай проблемы с GTK
-Мы зафиксировали что обычно у некоторых может не включиться Ruscord так как программа одновременно включает ```GTK2/3``` и ```GTK4``` Мы пытаемся сейчас разобраться
+##Оглавление
+[Начало](##RCLinux)
+[Оглавление](##Оглавление)
+[Начало работы с проектом](##Использование)
+[Примечание](##Примечание)
 
-## Начало работы с проектом
+##Использование
 Если хотите форкнуть и переделать клиент то пожалуйста мы не против этого мы также оставили инструкцию ниже будем рады какие фишки вы добавили в него! (Только перед тем как выложить соблюдайте лицензию GNU AGPLv3 также используйте его)
 
 ```
