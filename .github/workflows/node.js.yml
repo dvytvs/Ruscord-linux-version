@@ -20,6 +20,10 @@ jobs:
       matrix:
         arch: [x64, ia32]
 
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+
     steps:
       - name: Установить зависимости в контейнер
         run: |
@@ -34,7 +38,7 @@ jobs:
       - name: Обновление библиотек и установка зависимостей с повтором
         run: |
           npm install -g npm@11
-          npx npm-check-updates -u
+          npx npm-check-updates -u || true
           n=0
           until [ $n -ge 3 ]
           do
