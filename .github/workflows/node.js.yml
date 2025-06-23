@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+      - run: npm install eslint@latest --save-dev
       - run: npm install --no-audit --no-fund
       - run: npm ci --no-audit --no-fund
       - run: npm run dist
@@ -36,6 +37,7 @@ jobs:
       - run: curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
       - run: apt-get install -y nodejs
       - uses: actions/checkout@v4
+      - run: npm install eslint@latest --save-dev
       - run: npm install --no-audit --no-fund
       - run: npm ci --no-audit --no-fund
       - run: npm run dist
