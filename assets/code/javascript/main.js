@@ -1,66 +1,108 @@
-const { app, BrowserWindow, ipcMain, net } = require('electron')
-const path = require('path')
+import { app, BrowserWindow, dialog, Menu, shell, ipcMain } from 'electron';
+import { autoUpdater } from 'electron-updater';
+import path from 'path';
+import fs from 'fs/promises';
+import log from 'electron-log';
+import { fileURLToPath } from 'url';
+import Store from 'electron-store';
 
-let mainWindow
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-function createWindow() {
+const store = new Store();
+
+autoUpdater.logger = log;
+autoUpdater.autoDownload = true;
+
+let splashWindow;
+let mainWindow;
+
+function createSplash() {
+  splashWindow = new BrowserWindow({
+    width: 400,
+    height: 300,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    resizable: false,
+    webPreferences: {
+      contextIsolation: true,
+      sandbox: true,
+      preload: path.join(__dirname, 'preload.js')
+    }
+  });
+  splashWindow.loadFile(path.join(__dirname, 'assets', 'code', 'html', 'splash.html'));
+}
+
+function createMain() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    frame: false,
-    backgroundColor: '#121212',
-    icon: path.join(__dirname, 'assets', 'Images', 'logo.png'),
+    icon: path.join(__dirname, 'assets', 'Images', 'winicon.png'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
-      nodeIntegration: false,
-      enableRemoteModule: false,
+      sandbox: true,
+      preload: path.join(__dirname, 'preload.js')
     }
-  })
+  });
+  mainWindow.loadURL('https://app.russcord.ru');
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+    if (splashWindow) splashWindow.close();
+  });
+}
 
-  mainWindow.loadFile(path.join(__dirname, 'assets', 'code', 'javascript', 'renderer', 'index.html'))
+function setupAutoUpdater() {
+  autoUpdater.on('update-available', info => {
+    splashWindow.webContents.send('update-available', info.version);
+  });
+  autoUpdater.on('download-progress', progress => {
+    splashWindow.webContents.send('update-progress', {
+      percent: progress.percent,
+      transferred: progress.transferred,
+      total: progress.total
+    });
+  });
+  autoUpdater.on('update-downloaded', () => {
+    splashWindow.webContents.send('update-downloaded');
+    const response = dialog.showMessageBoxSync({
+      type: 'question',
+      buttons: ['Перезапустить', 'Позже'],
+      title: 'Обновление готово',
+      message: 'Обновление загружено. Перезапустить приложение сейчас?'
+    });
+    if (response === 0) autoUpdater.quitAndInstall();
+  });
+  autoUpdater.on('error', err => {
+    splashWindow.webContents.send('update-error', err.message);
+  });
+  autoUpdater.checkForUpdatesAndNotify();
 }
 
 app.whenReady().then(() => {
-  createWindow()
+  createSplash();
+  setupAutoUpdater();
+  setTimeout(() => {
+    createMain();
+  }, 5000);
+});
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-})
+ipcMain.handle('get-settings', () => store.store);
+ipcMain.handle('set-setting', (_, key, value) => {
+  store.set(key, value);
+});
+ipcMain.handle('check-connection', async () => {
+  try {
+    const res = await fetch('https://app.russcord.ru', { method: 'HEAD', timeout: 3000 });
+    return res.ok;
+  } catch {
+    return false;
+  }
+});
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
-})
-
-ipcMain.handle('check-internet', () => {
-  return new Promise(resolve => {
-    const request = net.request('https://www.google.com')
-    request.on('response', () => resolve(true))
-    request.on('error', () => resolve(false))
-    request.end()
-  })
-})
-
-ipcMain.handle('reload-app', () => {
-  app.relaunch()
-  app.exit()
-})
-
-ipcMain.on('window-control', (event, action) => {
-  const win = BrowserWindow.getFocusedWindow()
-  if (!win) return
-  switch (action) {
-    case 'minimize':
-      win.minimize()
-      break
-    case 'maximize':
-      win.isMaximized() ? win.unmaximize() : win.maximize()
-      break
-    case 'close':
-      win.close()
-      break
-  }
-})
+  if (process.platform !== 'darwin') app.quit();
+});
+               
