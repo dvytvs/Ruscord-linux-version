@@ -16,7 +16,6 @@
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
       "main.js",
-      "about.html",
       "assets/**/*",
       "!assets/**/*.md"
     ],
