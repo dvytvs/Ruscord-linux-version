@@ -15,6 +15,9 @@ jobs:
       image: debian:bullseye
     permissions:
       contents: read
+    strategy:
+      matrix:
+        arch: [x64, ia32]
 
     steps:
       - name: Установить зависимости в контейнер
@@ -41,48 +44,47 @@ jobs:
           done
           npm install eslint@latest --save-dev
 
-      - name: Билд файлов
-        run: npm run dist
+      - name: Билд файлов для ${{ matrix.arch }}
+        run: npx electron-builder --linux --${{ matrix.arch }} --publish=never
 
       - name: Загрузка .deb
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord.deb
+          name: Ruscord-${{ matrix.arch }}.deb
           path: dist/*.deb
 
       - name: Загрузка .rpm
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord.rpm
+          name: Ruscord-${{ matrix.arch }}.rpm
           path: dist/*.rpm
 
       - name: Загрузка .pacman
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord.pacman
+          name: Ruscord-${{ matrix.arch }}.pacman
           path: dist/*.pacman
 
       - name: Загрузка .AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord.AppImage
+          name: Ruscord-${{ matrix.arch }}.AppImage
           path: dist/*.AppImage
 
       - name: Загрузка .snap
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord.snap
+          name: Ruscord-${{ matrix.arch }}.snap
           path: dist/*.snap
 
       - name: Загрузка .tar.xz
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord.tar.xz
+          name: Ruscord-${{ matrix.arch }}.tar.xz
           path: dist/*.tar.xz
 
       - name: Загрузка -latest.yml
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord-latest-yml
+          name: Ruscord-${{ matrix.arch }}-latest-yml
           path: dist/*-latest.yml
-          
