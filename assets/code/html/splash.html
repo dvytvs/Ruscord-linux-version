@@ -2,28 +2,93 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Проверка обновлений</title>
+  <title>Ruscord загрузка</title>
   <style>
-    html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:transparent;user-select:none}
-    body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;color:#fff}
-    .spinner{width:100px;height:100px;background:url('../Images/loader.gif') center/contain no-repeat;margin-bottom:16px;border-radius:12px;pointer-events:none}
-    .title{font-size:18px;margin-bottom:8px}
-    .progress-text{font-size:14px;color:#a0a0a0;margin-bottom:8px}
-    .bar-container{width:80%;height:6px;background:#333;border-radius:3px;overflow:hidden}
-    .bar-fill{width:0;height:100%;background:#262626;transition:width 0.2s}
+    body {
+      margin: 0;
+      background: #121212;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: #fff;
+      font-family: sans-serif;
+    }
+    img {
+      width: 100px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    #bar-container {
+      margin-top: 10px;
+      width: 80%;
+      height: 4px;
+      background: #444;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    #bar {
+      height: 100%;
+      background: #262626;
+      width: 0;
+    }
   </style>
 </head>
 <body>
-  <div class="spinner"></div>
-  <div class="title">Проверка обновлений</div>
-  <div id="progress-text" class="progress-text">0 из 0 MB</div>
-  <div class="bar-container">
-    <div id="bar-fill" class="bar-fill"></div>
-  </div>
+  <img src="../../Images/icon2.png" alt="Ruscord">
+  <div id="status">Подготовка...</div>
+  <div id="bar-container"><div id="bar"></div></div>
+
   <script>
-    const { ipcRenderer } = require('electron');
-    function formatBytes(b){const u=['B','KB','MB','GB'];let i=0;while(b>=1024&&i<u.length-1){b/=1024;i++}return b.toFixed(1)+' '+u[i]}
-    ipcRenderer.on('update-progress',(_,p)=>{document.getElementById('progress-text').textContent=`${formatBytes(p.transferred)} из ${formatBytes(p.total)}`;document.getElementById('bar-fill').style.width=`${p.percent.toFixed(1)}%`;});
+    const status = document.getElementById('status');
+    const bar = document.getElementById('bar');
+
+    function updateConnectionStatus() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString();
+      status.textContent = `Попытка подключения ${timeStr}`;
+      window.electronAPI.checkConnection().then(isOnline => {
+        if (isOnline) {
+          status.textContent = 'Подключаемся';
+        } else {
+          setTimeout(updateConnectionStatus, 2000);
+        }
+      });
+    }
+
+    updateConnectionStatus();
+
+    window.electronAPI.onUpdateAvailable(version => {
+      status.textContent = `Доступно обновление: ${version}`;
+    });
+
+    window.electronAPI.onUpdateProgress(data => {
+      const { percent, transferred, total } = data;
+      bar.style.width = `${percent}%`;
+      const format = (bytes) => {
+        if (bytes >= 1073741824) return (bytes / 1073741824).toFixed(1) + ' ГБ';
+        if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' МБ';
+        if (bytes >= 1024) return (bytes / 1024).toFixed(1) + ' КБ';
+        return bytes + ' Б';
+      };
+      status.textContent = `Скачано ${format(transferred)} из ${format(total)}`;
+    });
+
+    window.electronAPI.onUpdateDownloaded(() => {
+      status.textContent = 'Обновление загружено. Ждём подтверждения...';
+    });
+
+    window.electronAPI.onUpdateError(msg => {
+      status.textContent = `Ошибка обновления: ${msg}`;
+    });
   </script>
 </body>
 </html>
