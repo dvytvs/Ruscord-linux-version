@@ -32,6 +32,9 @@ jobs:
       - name: Установка production зависимостей
         run: npm ci
 
+      - name: Установка React
+        run: npm install react react-dom
+
       - name: Сборка фронтенда (React) через webpack
         run: npx webpack --mode development
 
