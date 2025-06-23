@@ -24,13 +24,21 @@ jobs:
           curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
           apt-get install -y nodejs
 
-      - uses: actions/checkout@v4
+      - name: Checkout кода
+        uses: actions/checkout@v4
 
-      - name: Обновление библиотек до последней версии
+      - name: Обновление библиотек и установка зависимостей с повтором
         run: |
-          npm install -g npm@11 && \
-          npx npm-check-updates -u && \
-          npm install --no-audit --no-fund && \
+          npm install -g npm@11
+          npx npm-check-updates -u
+          n=0
+          until [ $n -ge 3 ]
+          do
+            npm install --no-audit --no-fund && break
+            n=$((n+1))
+            echo "Попытка $n не удалась, пробую снова через 5 секунд..."
+            sleep 5
+          done
           npm install eslint@latest --save-dev
 
       - name: Билд файлов
