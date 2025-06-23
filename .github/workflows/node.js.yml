@@ -44,14 +44,45 @@ jobs:
       - name: Билд файлов
         run: npm run dist
 
-      - name: Загрузка артефактов
+      - name: Загрузка .deb
         uses: actions/upload-artifact@v4
         with:
-          name: ruscord-linux
-          path: |
-            dist/*.deb
-            dist/*.rpm
-            dist/*.pacman
-            dist/*.AppImage
-            dist/*.snap
-            dist/*-latest.yml
+          name: Ruscord.deb
+          path: dist/*.deb
+
+      - name: Загрузка .rpm
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord.rpm
+          path: dist/*.rpm
+
+      - name: Загрузка .pacman
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord.pacman
+          path: dist/*.pacman
+
+      - name: Загрузка .AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord.AppImage
+          path: dist/*.AppImage
+
+      - name: Загрузка .snap
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord.snap
+          path: dist/*.snap
+
+      - name: Загрузка .tar.xz
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord.tar.xz
+          path: dist/*.tar.xz
+
+      - name: Загрузка -latest.yml
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-latest-yml
+          path: dist/*-latest.yml
+          
