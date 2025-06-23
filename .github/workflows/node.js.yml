@@ -17,24 +17,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup Node.js
+      - name: Настройка Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install binutils (для fpm)
+      - name: Установка binutils (для fpm)
         run: sudo apt-get update && sudo apt-get install -y binutils
 
-      - name: Install dependencies
+      - name: Установка библиотек на последнем версии
         run: npm install eslint@latest --save-dev
 
-      - name: Install npm packages (без audit и fund)
+      - name: Установка npm пакетов (Без audit и fund)
         run: npm install --no-audit --no-fund
 
-      - name: Build distributable (.deb)
+      - name: Билд файлов
         run: npm run dist
 
-      - name: Upload artifact
+      - name: Выложить файлы
         uses: actions/upload-artifact@v4
         with:
           name: ruscord-ubuntu
@@ -45,7 +45,7 @@ jobs:
     container:
       image: debian:bullseye
     steps:
-      - name: Install dependencies in container
+      - name: Установить библиотеки в контейнер
         run: |
           apt-get update
           apt-get install -y curl git ca-certificates binutils sudo
@@ -54,16 +54,16 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Установка библиотек на последнем версии
         run: npm install eslint@latest --save-dev
 
-      - name: Install npm packages
+      - name: Установка npm пакетов (Без audit и fund)
         run: npm install --no-audit --no-fund
 
-      - name: Build distributable (.deb)
+      - name: Билд файлов
         run: npm run dist
 
-      - name: Upload artifact
+      - name: Выложить файлы
         uses: actions/upload-artifact@v4
         with:
           name: ruscord-debian
