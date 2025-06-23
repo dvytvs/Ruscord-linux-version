@@ -1,6 +1,7 @@
 name: Ruscord Node.js CI Linux Build
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
