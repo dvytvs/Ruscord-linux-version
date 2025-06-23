@@ -32,30 +32,99 @@ jobs:
       - name: Установка production зависимостей
         run: npm ci
 
+      - name: Обновить сертификаты
+        run: sudo apt-get update && sudo apt-get install -y ca-certificates
+
       - name: Установка React
         run: npm install react react-dom
 
       - name: Сборка фронтенда (React) через webpack
         run: npx webpack --mode development
 
-      - name: Билд для x64
-        run: npx electron-builder --linux --x64 --publish=never
+      # --- Билд и загрузка для x64 ---
+      - name: Билд для x64 (.deb, .rpm, .tar.xz, .snap, .AppImage, .pacman)
+        run: |
+          npx electron-builder --linux --x64 --publish=never --config.extraMetadata.arch=x64
+          npx electron-builder --linux --x64 --publish=never -m deb,rpm,tar.xz,snap,appimage,pacman
 
-      - name: Загрузка артефактов x64
+      - name: Загрузка артефактов x64 (.deb)
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord-x64
-          path: dist/*x64*
+          name: Ruscord-x64-deb
+          path: dist/*.deb
 
-      - name: Очистка dist перед ia32
+      - name: Загрузка артефактов x64 (.rpm)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-x64-rpm
+          path: dist/*.rpm
+
+      - name: Загрузка артефактов x64 (.tar.xz)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-x64-tarxz
+          path: dist/*.tar.xz
+
+      - name: Загрузка артефактов x64 (.snap)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-x64-snap
+          path: dist/*.snap
+
+      - name: Загрузка артефактов x64 (.AppImage)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-x64-appimage
+          path: dist/*.AppImage
+
+      - name: Загрузка артефактов x64 (.pacman)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-x64-pacman
+          path: dist/*.pacman
+
+      - name: Очистка dist перед сборкой ia32
         run: rm -rf dist/*
 
-      - name: Билд для ia32
-        run: npx electron-builder --linux --ia32 --publish=never
+      # --- Билд и загрузка для ia32 ---
+      - name: Билд для ia32 (.deb, .rpm, .tar.xz, .snap, .AppImage, .pacman)
+        run: |
+          npx electron-builder --linux --ia32 --publish=never --config.extraMetadata.arch=ia32
+          npx electron-builder --linux --ia32 --publish=never -m deb,rpm,tar.xz,snap,appimage,pacman
 
-      - name: Загрузка артефактов ia32
+      - name: Загрузка артефактов ia32 (.deb)
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord-ia32
-          path: dist/*ia32*
+          name: Ruscord-ia32-deb
+          path: dist/*.deb
+
+      - name: Загрузка артефактов ia32 (.rpm)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-ia32-rpm
+          path: dist/*.rpm
+
+      - name: Загрузка артефактов ia32 (.tar.xz)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-ia32-tarxz
+          path: dist/*.tar.xz
+
+      - name: Загрузка артефактов ia32 (.snap)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-ia32-snap
+          path: dist/*.snap
+
+      - name: Загрузка артефактов ia32 (.AppImage)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-ia32-appimage
+          path: dist/*.AppImage
+
+      - name: Загрузка артефактов ia32 (.pacman)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-ia32-pacman
+          path: dist/*.pacman
           
