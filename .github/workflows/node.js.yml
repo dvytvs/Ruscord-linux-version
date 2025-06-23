@@ -1,0 +1,47 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js CI Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm run build
+      - run: npx electron-builder
+      - uses: actions/upload-artifact@v4
+        with:
+          name: electron-app-ubuntu
+          path: dist/**/*
+
+  build-debian:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bullseye
+    steps:
+      - run: apt-get update && apt-get install -y curl git ca-certificates npm nodejs
+      - uses: actions/checkout@v4
+      - run: npm install
+      - run: npm run build
+      - run: npx electron-builder
+      - uses: actions/upload-artifact@v4
+        with:
+          name: electron-app-debian
+          path: dist/**/*
+          
