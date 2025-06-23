@@ -40,7 +40,7 @@ jobs:
           do
             npm install --no-audit --no-fund && break
             n=$((n+1))
-            echo "Попытка $n не удалась, пробую снова через 5 секунд..."
+            echo "Попытка $n не удалась, запуск снова через 5 секунд..."
             sleep 5
           done
           npm install eslint@latest --save-dev
