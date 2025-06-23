@@ -35,7 +35,7 @@
       "maintainer": "dvytvs <zapretsystem445@proton.me>",
       "synopsis": "Ruscord — клиент для общения и игр",
       "asar": true,
-      "compression": "maximum"
+      "compression": "xz"
     },
     "extraResources": [
       {
