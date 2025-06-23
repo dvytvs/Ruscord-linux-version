@@ -25,7 +25,7 @@ To download a build, go to the **Releases** section and select the package inten
 ## Table of Contents
 
 - [Getting Started](https://github.com/dvytvs/Ruscord-linux-version/new/main/.github#rclinux)
-- [How to Install](https://github.com/dvytvs/Ruscord-linux-version/blob/main/.github/howdownload.md)
+- [How to Install](https://github.com/dvytvs/Ruscord-linux-version/blob/main/.github/howdownload.en.md)
 - [Russian README](https://github.com/dvytvs/Ruscord-linux-version/blob/main/README.md)
 - [Table of Contents](https://github.com/dvytvs/Ruscord-linux-version/new/main/.github#table-of-contents)
 - [Getting Started with the Project](https://github.com/dvytvs/Ruscord-linux-version/new/main/.github#usage)
