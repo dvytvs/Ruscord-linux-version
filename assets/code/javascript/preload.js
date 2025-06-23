@@ -1,7 +1,7 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('api', {
-  controlWindow: action => ipcRenderer.send('window-control', action),
-  getSettings:    ()     => ipcRenderer.invoke('get-settings'),
-  setSetting:     (k, v)  => ipcRenderer.invoke('set-setting', k, v)
-});
+  checkInternet: () => ipcRenderer.invoke('check-internet'),
+  reloadApp: () => ipcRenderer.invoke('reload-app'),
+  controlWindow: (action) => ipcRenderer.send('window-control', action)
+})
