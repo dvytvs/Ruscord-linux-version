@@ -1,4 +1,4 @@
-##RCLinux
+## RCLinux
 <p align="center">
   <a href="https://postimg.cc/7GFxM3mz">
     <img src="https://i.postimg.cc/8c5jGwvZ/logo.png" alt="logo.png" />
@@ -22,16 +22,16 @@ XZY123lol и dvytvs сделали для вас отдельный клиент
 
 Чтобы скачать билд зайдите в ```Releases``` и оттуда выберите ваш пакет который предназначен для дистрибутива если его нет напишите нам в ```issues```
 
-##Оглавление
+## Оглавление
 
-- [Начало](##RCLinux)
+- [Начало](https://github.com/dvytvs/Ruscord-linux-version/edit/main/README.md#rclinux)
 - [Как установить](https://github.com/dvytvs/Ruscord-linux-version/blob/main/.github/howdownload.md)
-- [english](https://github.com/dvytvs/Ruscord-linux-version/blob/main/.github/README.en.md)
-- [Оглавление](##Оглавление)
-- [Начало работы с проектом](##Использование)
-- [Примечание](##Примечание)
+- [english README](https://github.com/dvytvs/Ruscord-linux-version/blob/main/.github/README.en.md)
+- [Оглавление](https://github.com/dvytvs/Ruscord-linux-version/edit/main/README.md#%D0%BE%D0%B3%D0%BB%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5)
+- [Начало работы с проектом](https://github.com/dvytvs/Ruscord-linux-version/edit/main/README.md#%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
+- [Примечание](https://github.com/dvytvs/Ruscord-linux-version/edit/main/README.md#%D0%BF%D1%80%D0%B8%D0%BC%D0%B5%D1%87%D0%B0%D0%BD%D0%B8%D0%B5)
 
-##Использование
+## Использование
 Если хотите форкнуть и переделать клиент то пожалуйста мы не против этого мы также оставили инструкцию ниже будем рады какие фишки вы добавили в него! (Только перед тем как выложить соблюдайте лицензию GNU AGPLv3 также используйте его)
 
 ```
@@ -46,7 +46,7 @@ npm install electron electron-builder electron-store electron-updater
 Ну и все! Переделывайте скрипт в ```main.js``` и конфиг ```package.json```, после как закончите напишите ```npm run dist``` и ждите, как только закончится зайдите в папку ```dist``` и оттуда вытащите билды.
 
 
-##Примечание
+## Примечание
 [![1000232063.png](https://i.postimg.cc/T1LfQsgv/1000232063.png)](https://postimg.cc/q6TPvj11)
 
 Эта программа является свободным программным обеспечением: вы можете распространять и/или изменять его в соответствии с условиями лицензии [GNU Affero General Public License версии 3.0](https://github.com/dvytvs/Ruscord-linux-version/blob/main/LICENSE) или поздней версии, опубликованной Фондом свободного программного обеспечения.
