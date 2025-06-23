@@ -33,7 +33,14 @@ jobs:
         run: npm run dist
 
       - name: Загрузка артефактов
-        uses: actions/upload-artifact@v4
-        with:
-          name: ruscord-debian
-          path: dist/*.deb
+      uses: actions/upload-artifact@v4
+      with:
+      name: ruscord-linux
+      path: |
+      dist/*.deb
+      dist/*.rpm
+      dist/*.pacman
+      dist/*.AppImage
+      dist/*.snap
+      dist/*-latest.yml
+      
