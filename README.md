@@ -25,6 +25,8 @@ XZY123lol и dvytvs сделали для вас отдельный клиент
 ##Оглавление
 
 - [Начало](##RCLinux)
+- [Как установить](https://github.com/dvytvs/Ruscord-linux-version/blob/main/.github/howdownload.md)
+- [english](https://github.com/dvytvs/Ruscord-linux-version/blob/main/.github/README.en.md)
 - [Оглавление](##Оглавление)
 - [Начало работы с проектом](##Использование)
 - [Примечание](##Примечание)
