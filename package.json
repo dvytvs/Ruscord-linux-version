@@ -47,7 +47,11 @@
       "perMachine": true,
       "allowElevation": true
     },
-    "publish": null
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "dvytvs",
+        "repo": "Ruscord-linux-version"
   },
   "keywords": [
     "ruscord",
