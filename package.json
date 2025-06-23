@@ -34,13 +34,6 @@
       "category": "Network",
       "maintainer": "dvytvs <zapretsystem445@proton.me>",
       "synopsis": "Ruscord — клиент для общения и игр",
-      "desktop": {
-        "Name": "Ruscord",
-        "Comment": "Общайся и играй с друзьями в Ruscord",
-        "Type": "Application",
-        "Categories": "Network;Chat;",
-        "StartupWMClass": "Ruscord"
-      },
       "asar": true,
       "compression": "maximum"
     },
