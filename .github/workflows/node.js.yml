@@ -12,42 +12,25 @@ jobs:
       contents: read
 
     steps:
-      - name: Cache node modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Установка dev-зависимостей для сборки фронтенда
-        run: npm install --save-dev webpack webpack-cli babel-loader @babel/core @babel/preset-env @babel/preset-react
-
-      - name: Установка
-        run: apt update && apt install sudo rpm 
-      - name: Установка production зависимостей
-        run: npm ci
-
-      - name: Обновить сертификаты
-        run: sudo apt-get update && sudo apt-get install -y ca-certificates
-
-      - name: Установка React
-        run: npm install react react-dom
-
-      - name: Сборка фронтенда (React) через webpack
-        run: npx webpack --mode development
-
-      # --- Билд и загрузка для x64 ---
-      - name: Билд для x64 (.deb, .rpm, .tar.xz, .snap, .AppImage, .pacman)
+      - name: Установить зависимости в контейнер
         run: |
-          npx electron-builder --linux --x64 --publish=never --config.extraMetadata.arch=x64
-          npx electron-builder --linux --x64 --publish=never -m deb,rpm,tar.xz,snap,appimage,pacman
+          apt-get update
+          apt-get install -y curl git ca-certificates binutils sudo rpm libarchive-tools
+          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+          apt-get install -y nodejs
+
+      - name: Checkout кода
+        uses: actions/checkout@v4
+
+      - name: Установка зависимостей
+        run: |
+          npm install -g npm@11
+          npm ci
+
+      # --- Билд для x64 ---
+      - name: Билд для x64
+        run: |
+          npx electron-builder --linux --x64 --publish=never
 
       - name: Загрузка артефактов x64 (.deb)
         uses: actions/upload-artifact@v4
@@ -85,14 +68,13 @@ jobs:
           name: Ruscord-x64-pacman
           path: dist/*.pacman
 
-      - name: Очистка dist перед сборкой ia32
+      - name: Очистка dist перед ia32
         run: rm -rf dist/*
 
-      # --- Билд и загрузка для ia32 ---
-      - name: Билд для ia32 (.deb, .rpm, .tar.xz, .snap, .AppImage, .pacman)
+      # --- Билд для ia32 ---
+      - name: Билд для ia32
         run: |
-          npx electron-builder --linux --ia32 --publish=never --config.extraMetadata.arch=ia32
-          npx electron-builder --linux --ia32 --publish=never -m deb,rpm,tar.xz,snap,appimage,pacman
+          npx electron-builder --linux --ia32 --publish=never
 
       - name: Загрузка артефактов ia32 (.deb)
         uses: actions/upload-artifact@v4
