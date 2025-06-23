@@ -17,7 +17,7 @@ jobs:
       - name: Установить зависимости в контейнер
         run: |
           apt-get update
-          apt-get install -y curl git ca-certificates binutils sudo rpm bsdtar
+          apt-get install -y curl git ca-certificates binutils sudo rpm libarchive-tools
           curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
           apt-get install -y nodejs
 
