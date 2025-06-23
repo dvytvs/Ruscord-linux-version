@@ -9,43 +9,12 @@ on:
       - main
 
 jobs:
-  build-ubuntu:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Настройка Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Установка binutils (для fpm)
-        run: sudo apt-get update && sudo apt-get install -y binutils
-
-      - name: Установка библиотек на последнем версии
-        run: npm install eslint@latest --save-dev
-
-      - name: Установка npm пакетов (Без audit и fund)
-        run: npm install --no-audit --no-fund
-
-      - name: Билд файлов
-        run: npm run dist
-
-      - name: Выложить файлы
-        uses: actions/upload-artifact@v4
-        with:
-          name: ruscord-ubuntu
-          path: dist/*.deb
-
   build-debian:
     runs-on: ubuntu-latest
     container:
       image: debian:bullseye
     steps:
-      - name: Установить библиотеки в контейнер
+      - name: Установить зависимости в контейнер
         run: |
           apt-get update
           apt-get install -y curl git ca-certificates binutils sudo
@@ -54,18 +23,17 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Установка библиотек на последнем версии
+      - name: Установка eslint последней версии
         run: npm install eslint@latest --save-dev
 
-      - name: Установка npm пакетов (Без audit и fund)
+      - name: Установка npm пакетов (без audit и fund)
         run: npm install --no-audit --no-fund
 
       - name: Билд файлов
         run: npm run dist
 
-      - name: Выложить файлы
+      - name: Загрузка артефактов
         uses: actions/upload-artifact@v4
         with:
           name: ruscord-debian
           path: dist/*.deb
-
