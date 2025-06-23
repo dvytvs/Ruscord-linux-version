@@ -12,7 +12,7 @@
   "build": {
     "appId": "ru.ruscord.linux",
     "productName": "Ruscord",
-    "copyright": "Copyright © 2025 dvytvs, XZY"
+    "copyright": "Copyright © 2025 dvytvs, XZY — неофициальный клиент Ruscord"
     },
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
