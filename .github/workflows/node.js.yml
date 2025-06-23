@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Обновление библиотек до последней версии
-        run: npm install -g npm@11 && npm install eslint@latest --save-dev && npx npm-check-updates -u
+        run: npm install -g npm@11 && npx npm-check-updates -u && npm install eslint@latest --save-dev
 
       - name: Установка npm пакетов (без audit и fund)
         run: npm install --no-audit --no-fund
