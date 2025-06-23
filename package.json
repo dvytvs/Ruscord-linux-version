@@ -30,7 +30,7 @@
       ],
       "arch": ["x64", "ia32"],
       "icon": "assets/icon.png",
-      "category": "Network",
+      "category": "Chat",
       "maintainer": "dvytvs <zapretsystem445@proton.me>",
       "synopsis": "Общайся и играй с друзьями в Ruscord",
       "asar": true
@@ -52,6 +52,8 @@
         "provider": "github",
         "owner": "dvytvs",
         "repo": "Ruscord-linux-version"
+      }
+    ]
   },
   "keywords": [
     "ruscord",
