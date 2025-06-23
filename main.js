@@ -5,6 +5,9 @@ const { autoUpdater } = require('electron-updater');
 const Store = require('electron-store');
 const log = require('electron-log');
 
+//Предназначен для включения определенных GTK
+app.commandLine.appendSwitch('gtk-version', '3');
+
 // Инициализация хранилища с валидацией
 const schema = {
   windowState: {
