@@ -16,8 +16,17 @@
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
       "main.js",
+      "preload.js",
+      "package.json",
       "assets/**/*",
-      "!assets/**/*.md"
+      "node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "assets/",
+        "to": "assets",
+        "filter": ["**/*"]
+      }
     ],
     "linux": {
       "target": [
@@ -28,19 +37,12 @@
         "AppImage",
         "snap"
       ],
-      "icon": "assets/icon.png",
+      "icon": "assets/Images/icon.png",
       "category": "Chat",
       "maintainer": "dvytvs <zapretsystem445@proton.me>",
       "synopsis": "Общайся и играй с друзьями в Ruscord",
       "asar": true
     },
-    "extraResources": [
-      {
-        "from": "assets/",
-        "to": "assets",
-        "filter": ["**/*"]
-      }
-    ],
     "nsis": {
       "oneClick": false,
       "perMachine": true,
