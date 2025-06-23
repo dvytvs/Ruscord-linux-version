@@ -7,25 +7,24 @@ export default function TabBar({ activeTab, setActiveTab }) {
         <img src="../../../../Images/logo.png" className="h-5 w-5" />
         Ruscord
       </div>
-      <div className="flex gap-1">
-        <button
-          onClick={() => setActiveTab('site')}
-          className={`w-6 h-6 rounded ${activeTab === 'site' ? 'bg-[#2f2f2f]' : 'bg-transparent'} hover:bg-[#2f2f2f]`}
-          title="Клиент"
-        >🌐</button>
-        <button
-          onClick={() => setActiveTab('settings')}
-          className={`w-6 h-6 rounded ${activeTab === 'settings' ? 'bg-[#2f2f2f]' : 'bg-transparent'} hover:bg-[#2f2f2f]`}
-          title="Настройки"
-        >⚙</button>
+      <div className="flex items-center gap-2">
         <button
           onClick={() => setActiveTab('addons')}
-          className={`w-6 h-6 rounded ${activeTab === 'addons' ? 'bg-[#2f2f2f]' : 'bg-transparent'} hover:bg-[#2f2f2f]`}
+          className={`w-6 h-6 rounded ${activeTab === 'addons' ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f]`}
           title="Дополнения"
-        >🧩</button>
-        <button onClick={() => window.api.controlWindow('minimize')} className="w-6 h-6 rounded hover:bg-[#2f2f2f]" />
-        <button onClick={() => window.api.controlWindow('maximize')} className="w-6 h-6 rounded hover:bg-[#2f2f2f]" />
-        <button onClick={() => window.api.controlWindow('close')} className="w-6 h-6 rounded bg-[#6d84d4] hover:bg-[#7f95e0]" />
+        >
+          <img src="../../../../Images/icons/addons.png" className="w-full h-full object-contain" />
+        </button>
+        <button
+          onClick={() => setActiveTab('settings')}
+          className={`w-6 h-6 rounded ${activeTab === 'settings' ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f]`}
+          title="Настройки"
+        >
+          <img src="../../../../Images/icons/settings.png" className="w-full h-full object-contain" />
+        </button>
+        <button onClick={() => window.api.controlWindow('minimize')} className="w-6 h-6 rounded hover:bg-[#2f2f2f]" title="Свернуть" />
+        <button onClick={() => window.api.controlWindow('maximize')} className="w-6 h-6 rounded hover:bg-[#2f2f2f]" title="Развернуть" />
+        <button onClick={() => window.api.controlWindow('close')} className="w-6 h-6 rounded bg-[#6d84d4] hover:bg-[#7f95e0]" title="Закрыть" />
       </div>
     </div>
   )
