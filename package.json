@@ -41,7 +41,9 @@
       "oneClick": false,
       "perMachine": true,
       "allowElevation": true
-    }
+    },
+    "publish": null
+  }
   },
   "keywords": [
     "ruscord",
