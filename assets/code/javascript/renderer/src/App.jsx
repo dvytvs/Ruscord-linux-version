@@ -1,9 +1,15 @@
 import React, { useState } from 'react'
+import Splash from './components/Splash'
 import TabBar from './components/TabBar'
 import SettingsPanel from './components/SettingsPanel'
 
 export default function App() {
+  const [connected, setConnected] = useState(false)
   const [activeTab, setActiveTab] = useState('site')
+
+  if (!connected) {
+    return <Splash onConnected={() => setConnected(true)} />
+  }
 
   return (
     <div className="w-full h-full flex flex-col bg-[#121212]">
@@ -14,7 +20,7 @@ export default function App() {
             src="https://app.russcord.ru"
             style={{ width: '100%', height: '100%' }}
             partition="persist:ruscord"
-          ></webview>
+          />
         )}
         {activeTab === 'settings' && (
           <div className="p-4 bg-[#1e1e1e] rounded">
