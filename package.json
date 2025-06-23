@@ -22,7 +22,12 @@
     ],
     "linux": {
       "target": [
-        "deb"
+        "deb",
+        "rpm",
+        "pacman",
+        "tar.xz",
+        "AppImage",
+        "snap"
       ],
       "icon": "assets/icon.png",
       "category": "Network",
