@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Проверка обновлений</title>
+  <style>
+    html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:transparent;user-select:none}
+    body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;color:#fff}
+    .spinner{width:100px;height:100px;background:url('../Images/loader.gif') center/contain no-repeat;margin-bottom:16px;border-radius:12px;pointer-events:none}
+    .title{font-size:18px;margin-bottom:8px}
+    .progress-text{font-size:14px;color:#a0a0a0;margin-bottom:8px}
+    .bar-container{width:80%;height:6px;background:#333;border-radius:3px;overflow:hidden}
+    .bar-fill{width:0;height:100%;background:#262626;transition:width 0.2s}
+  </style>
+</head>
+<body>
+  <div class="spinner"></div>
+  <div class="title">Проверка обновлений</div>
+  <div id="progress-text" class="progress-text">0 из 0 MB</div>
+  <div class="bar-container">
+    <div id="bar-fill" class="bar-fill"></div>
+  </div>
+  <script>
+    const { ipcRenderer } = require('electron');
+    function formatBytes(b){const u=['B','KB','MB','GB'];let i=0;while(b>=1024&&i<u.length-1){b/=1024;i++}return b.toFixed(1)+' '+u[i]}
+    ipcRenderer.on('update-progress',(_,p)=>{document.getElementById('progress-text').textContent=`${formatBytes(p.transferred)} из ${formatBytes(p.total)}`;document.getElementById('bar-fill').style.width=`${p.percent.toFixed(1)}%`;});
+  </script>
+</body>
+</html>
