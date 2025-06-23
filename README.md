@@ -41,7 +41,7 @@ cd Ruscord-linux-version
 
 npm install
 
-npm install electron electron-builder electron-store electron-updater
+npm install electron electron-builder electron-store electron-updater electron-log electron-in-dev --save-dev
 ```
 Ну и все! Переделывайте скрипт в ```main.js``` и конфиг ```package.json```, после как закончите напишите ```npm run dist``` и ждите, как только закончится зайдите в папку ```dist``` и оттуда вытащите билды.
 
