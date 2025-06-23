@@ -1,63 +1,76 @@
-import { app, BrowserWindow, dialog, Menu, shell, ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
 import path from 'path';
 import fs from 'fs/promises';
 import log from 'electron-log';
-import { fileURLToPath } from 'url';
-import Store from 'electron-store';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const store = new Store();
-
-autoUpdater.logger = log;
-autoUpdater.autoDownload = true;
+import { autoUpdater } from 'electron-updater';
 
 let splashWindow;
 let mainWindow;
 
-function createSplash() {
+async function createSplash() {
   splashWindow = new BrowserWindow({
     width: 400,
     height: 300,
     frame: false,
-    transparent: true,
-    alwaysOnTop: true,
+    transparent: false,
+    backgroundColor: '#121212',
     resizable: false,
     webPreferences: {
+      preload: path.join(__dirname, 'assets', 'code', 'preload.js'),
       contextIsolation: true,
-      sandbox: true,
-      preload: path.join(__dirname, 'preload.js')
+      sandbox: true
     }
   });
   splashWindow.loadFile(path.join(__dirname, 'assets', 'code', 'html', 'splash.html'));
 }
 
-function createMain() {
+async function createMain() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 800,
     minHeight: 600,
+    backgroundColor: '#121212',
     icon: path.join(__dirname, 'assets', 'Images', 'winicon.png'),
     webPreferences: {
+      preload: path.join(__dirname, 'assets', 'code', 'preload.js'),
       contextIsolation: true,
-      sandbox: true,
-      preload: path.join(__dirname, 'preload.js')
+      sandbox: true
     }
   });
   mainWindow.loadURL('https://app.russcord.ru');
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
-    if (splashWindow) splashWindow.close();
-  });
 }
 
-function setupAutoUpdater() {
+async function checkConnection() {
+  try {
+    const response = await fetch('https://app.russcord.ru', { method: 'HEAD', timeout: 3000 });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+app.whenReady().then(async () => {
+  await createSplash();
+
+  let connected = false;
+  while (!connected) {
+    connected = await checkConnection();
+    if (connected) {
+      splashWindow.webContents.send('connection-status', true);
+    } else {
+      splashWindow.webContents.send('connection-status', false);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+
+  autoUpdater.logger = log;
+  autoUpdater.checkForUpdatesAndNotify();
+
   autoUpdater.on('update-available', info => {
     splashWindow.webContents.send('update-available', info.version);
   });
+
   autoUpdater.on('download-progress', progress => {
     splashWindow.webContents.send('update-progress', {
       percent: progress.percent,
@@ -65,44 +78,33 @@ function setupAutoUpdater() {
       total: progress.total
     });
   });
+
   autoUpdater.on('update-downloaded', () => {
     splashWindow.webContents.send('update-downloaded');
-    const response = dialog.showMessageBoxSync({
+    const choice = dialog.showMessageBoxSync({
       type: 'question',
       buttons: ['Перезапустить', 'Позже'],
-      title: 'Обновление готово',
-      message: 'Обновление загружено. Перезапустить приложение сейчас?'
+      title: 'Обновление',
+      message: 'Обновление загружено. Перезапустить сейчас?'
     });
-    if (response === 0) autoUpdater.quitAndInstall();
+    if (choice === 0) {
+      autoUpdater.quitAndInstall();
+    }
   });
-  autoUpdater.on('error', err => {
-    splashWindow.webContents.send('update-error', err.message);
+
+  autoUpdater.on('error', error => {
+    splashWindow.webContents.send('update-error', error.message);
   });
-  autoUpdater.checkForUpdatesAndNotify();
-}
 
-app.whenReady().then(() => {
-  createSplash();
-  setupAutoUpdater();
-  setTimeout(() => {
-    createMain();
-  }, 5000);
+  // Небольшая задержка для финального экрана
+  setTimeout(async () => {
+    await createMain();
+    splashWindow.close();
+  }, 1500);
 });
 
-ipcMain.handle('get-settings', () => store.store);
-ipcMain.handle('set-setting', (_, key, value) => {
-  store.set(key, value);
-});
-ipcMain.handle('check-connection', async () => {
-  try {
-    const res = await fetch('https://app.russcord.ru', { method: 'HEAD', timeout: 3000 });
-    return res.ok;
-  } catch {
-    return false;
-  }
-});
+ipcMain.handle('check-connection', () => checkConnection());
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
-               
