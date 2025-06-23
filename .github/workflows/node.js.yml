@@ -29,6 +29,8 @@ jobs:
       - name: Установка dev-зависимостей для сборки фронтенда
         run: npm install --save-dev webpack webpack-cli babel-loader @babel/core @babel/preset-env @babel/preset-react
 
+      - name: Установка
+        run: apt update && apt install sudo rpm 
       - name: Установка production зависимостей
         run: npm ci
 
