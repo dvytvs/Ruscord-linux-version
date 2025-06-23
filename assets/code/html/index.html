@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src https://app.russcord.ru https://www.google.com;" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ruscord</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body, html, #root {
+      margin: 0; padding: 0; height: 100%; width: 100%; background: #121212; color: white; font-family: Arial, sans-serif;
+    }
+  </style>
 </head>
 <body>
   <div id="root"></div>
-  <script type="module" src="../code/javascript/renderer/src/main.jsx"></script>
+  <script src="./bundle.js"></script>
 </body>
 </html>
