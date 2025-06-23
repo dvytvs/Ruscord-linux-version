@@ -8,6 +8,7 @@ export default function Splash({ onConnected }) {
 
   useEffect(() => {
     let interval
+
     function checkConnection() {
       window.api.checkInternet().then(isOnline => {
         if (isOnline) {
@@ -37,35 +38,44 @@ export default function Splash({ onConnected }) {
   }, [connected, onConnected])
 
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-[#121212] text-white">
+    <div style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100vh', backgroundColor:'#121212', color:'white'}}>
       <div
-        className="mb-4"
         style={{
           width: 80,
           height: 80,
           animation: 'pulse 2s infinite ease-in-out',
+          marginBottom: 16,
         }}
       >
-        <img src="../../../../Images/logo.png" alt="Ruscord" style={{ width: '100%', height: '100%' }} />
+        <img src="../../../../Images/logo2.png" alt="Ruscord" style={{ width: '100%', height: '100%' }} />
       </div>
 
       {!connected && !failed && (
-        <div className="text-center text-[#98a095] mb-2">
+        <div style={{ color: '#98a095', textAlign: 'center', marginBottom: 16 }}>
           Попытка подключения {attemptSeconds}s
         </div>
       )}
 
       {failed && (
         <>
-          <div className="text-center text-red-600 whitespace-pre-wrap mb-4">{status}</div>
+          <div style={{ color: 'red', whiteSpace: 'pre-wrap', textAlign: 'center', marginBottom: 16 }}>
+            {status}
+          </div>
           <button
             onClick={() => window.api.reloadApp()}
-            className="bg-[#6d84d4] px-4 py-2 rounded hover:bg-[#7f95e0]"
+            style={{ backgroundColor: '#6d84d4', padding: '8px 16px', borderRadius: 6, border: 'none', color: 'white', cursor: 'pointer' }}
           >
             Перезагрузить
           </button>
         </>
       )}
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(0.85); }
+        }
+      `}</style>
     </div>
   )
 }
