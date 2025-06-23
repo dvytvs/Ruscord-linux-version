@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: debian:bullseye
+    permissions:
+      contents: read
+
     steps:
       - name: Установить зависимости в контейнер
         run: |
@@ -24,7 +27,11 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Обновление библиотек до последней версии
-        run: npm install -g npm@11 && npx npm-check-updates -u && npm install --no-audit --no-fund && npm install eslint@latest --save-dev
+        run: |
+          npm install -g npm@11 && \
+          npx npm-check-updates -u && \
+          npm install --no-audit --no-fund && \
+          npm install eslint@latest --save-dev
 
       - name: Билд файлов
         run: npm run dist
@@ -40,4 +47,3 @@ jobs:
             dist/*.AppImage
             dist/*.snap
             dist/*-latest.yml
-            
