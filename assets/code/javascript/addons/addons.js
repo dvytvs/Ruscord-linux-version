@@ -5,50 +5,71 @@ export function showAddonsNotice() {
   overlay.style.left = '0';
   overlay.style.width = '100vw';
   overlay.style.height = '100vh';
-  overlay.style.backgroundColor = 'rgba(18, 18, 18, 0.95)';
-  overlay.style.display = 'flex';
-  overlay.style.justifyContent = 'center';
-  overlay.style.alignItems = 'center';
+  overlay.style.backgroundColor = 'rgba(0,0,0,0.75)';
   overlay.style.zIndex = '10000';
 
   const modal = document.createElement('div');
+  modal.style.position = 'fixed';
+  modal.style.top = '20vh';
+  modal.style.left = '20px';
+  modal.style.width = '380px';
   modal.style.background = '#121212';
-  modal.style.padding = '20px 30px';
+  modal.style.padding = '20px 30px 20px 70px';
   modal.style.borderRadius = '8px';
-  modal.style.maxWidth = '400px';
-  modal.style.textAlign = 'center';
-  modal.style.boxShadow = '0 0 10px #000';
+  modal.style.boxShadow = '0 0 15px #000';
   modal.style.color = 'white';
   modal.style.fontFamily = 'sans-serif';
+  modal.style.display = 'flex';
+  modal.style.alignItems = 'center';
+  modal.style.gap = '15px';
+
+  const icon = document.createElement('img');
+  icon.src = './assets/Images/addons.png';
+  icon.style.width = '40px';
+  icon.style.height = '40px';
+  icon.style.position = 'absolute';
+  icon.style.left = '15px';
+  icon.style.top = '50%';
+  icon.style.transform = 'translateY(-50%)';
+
+  const content = document.createElement('div');
+  content.style.flex = '1';
 
   const h2 = document.createElement('h2');
   h2.innerText = 'Внимание';
-  modal.appendChild(h2);
+  h2.style.margin = '0 0 10px 0';
 
   const p = document.createElement('p');
-  p.innerText = 'Функция «Аддоны» скоро будет добавлена следите за новостями!.';
-  modal.appendChild(p);
+  p.innerText = 'Функция «Аддоны» будет добавлена в следующих версиях.';
+  p.style.margin = '0';
 
-  const btn = document.createElement('button');
-  btn.innerText = 'Понятно';
-  btn.style.marginTop = '20px';
-  btn.style.padding = '8px 16px';
-  btn.style.border = 'none';
-  btn.style.background = '#00aa00';
-  btn.style.color = 'white';
-  btn.style.fontSize = '16px';
-  btn.style.borderRadius = '5px';
-  btn.style.cursor = 'pointer';
-  btn.style.userSelect = 'none';
+  content.appendChild(h2);
+  content.appendChild(p);
 
-  btn.onmouseover = () => btn.style.background = '#009900';
-  btn.onmouseout = () => btn.style.background = '#00aa00';
+  const closeBtn = document.createElement('button');
+  closeBtn.innerText = '×';
+  closeBtn.style.position = 'absolute';
+  closeBtn.style.top = '8px';
+  closeBtn.style.right = '8px';
+  closeBtn.style.border = 'none';
+  closeBtn.style.background = 'transparent';
+  closeBtn.style.color = 'white';
+  closeBtn.style.fontSize = '24px';
+  closeBtn.style.cursor = 'pointer';
+  closeBtn.style.userSelect = 'none';
+  closeBtn.style.lineHeight = '1';
+  closeBtn.style.padding = '0';
 
-  btn.onclick = () => {
+  closeBtn.onmouseenter = () => closeBtn.style.color = '#00aa00';
+  closeBtn.onmouseleave = () => closeBtn.style.color = 'white';
+
+  closeBtn.onclick = () => {
     document.body.removeChild(overlay);
   };
 
-  modal.appendChild(btn);
+  modal.appendChild(icon);
+  modal.appendChild(content);
+  modal.appendChild(closeBtn);
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 }
