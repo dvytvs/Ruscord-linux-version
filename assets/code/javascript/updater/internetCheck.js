@@ -4,6 +4,8 @@ import { checkForUpdates } from './updateCheck.js';
 export function checkInternetAndUpdate(splash) {
   const startTime = Date.now();
 
+  splash.webContents.send('status-update', 'Проверка подключения к интернету...');
+
   function tryConnect() {
     dns.lookup('google.com', (err) => {
       if (err) {
@@ -18,6 +20,5 @@ export function checkInternetAndUpdate(splash) {
     });
   }
 
-  splash.webContents.send('status-update', 'Подключение к интернету...');
   tryConnect();
 }
