@@ -2,92 +2,92 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Ruscord загрузка</title>
+  <title>Ruscord Загрузка</title>
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
       background: #121212;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      color: #fff;
+      color: #ffffff;
       font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
     }
-    img {
-      width: 100px;
+
+    #logo {
+      width: 150px;
+      height: 150px;
       animation: pulse 2s infinite;
     }
+
     @keyframes pulse {
       0% { transform: scale(1); }
       50% { transform: scale(1.1); }
       100% { transform: scale(1); }
     }
+
     #status {
       margin-top: 20px;
       font-size: 14px;
+      text-align: center;
     }
-    #bar-container {
+
+    #progress-container {
       margin-top: 10px;
       width: 80%;
-      height: 4px;
-      background: #444;
-      border-radius: 2px;
+      height: 8px;
+      background: #333;
+      border-radius: 4px;
       overflow: hidden;
+      display: none;
     }
-    #bar {
+
+    #progress-bar {
       height: 100%;
-      background: #262626;
-      width: 0;
+      width: 0%;
+      background: #00ff00;
+      transition: width 0.2s ease;
     }
   </style>
 </head>
 <body>
-  <img src="../../Images/icon2.png" alt="Ruscord">
-  <div id="status">Подготовка...</div>
-  <div id="bar-container"><div id="bar"></div></div>
+  <img id="logo" src="./assets/Images/logonobg.png" alt="Ruscord logo">
+  <div id="status">Проверка подключения к интернету...</div>
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
 
   <script>
-    const status = document.getElementById('status');
-    const bar = document.getElementById('bar');
+    let startTime = null;
+    let interval = null;
 
-    function updateConnectionStatus() {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString();
-      status.textContent = `Попытка подключения ${timeStr}`;
-      window.electronAPI.checkConnection().then(isOnline => {
-        if (isOnline) {
-          status.textContent = 'Подключаемся';
-        } else {
-          setTimeout(updateConnectionStatus, 2000);
+    window.electronAPI.onStatusUpdate((text) => {
+      const status = document.getElementById('status');
+      status.innerText = text;
+
+      if (text.startsWith('Подключение к интернету')) {
+        if (!startTime) {
+          startTime = Date.now();
+          interval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            status.innerText = `Подключение к интернету... ${elapsed} сек`;
+          }, 1000);
         }
-      });
-    }
-
-    updateConnectionStatus();
-
-    window.electronAPI.onUpdateAvailable(version => {
-      status.textContent = `Доступно обновление: ${version}`;
+      } else {
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
+      }
     });
 
-    window.electronAPI.onUpdateProgress(data => {
-      const { percent, transferred, total } = data;
+    window.electronAPI.onProgressUpdate((percent) => {
+      const bar = document.getElementById('progress-bar');
       bar.style.width = `${percent}%`;
-      const format = (bytes) => {
-        if (bytes >= 1073741824) return (bytes / 1073741824).toFixed(1) + ' ГБ';
-        if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' МБ';
-        if (bytes >= 1024) return (bytes / 1024).toFixed(1) + ' КБ';
-        return bytes + ' Б';
-      };
-      status.textContent = `Скачано ${format(transferred)} из ${format(total)}`;
-    });
-
-    window.electronAPI.onUpdateDownloaded(() => {
-      status.textContent = 'Обновление загружено. Ждём подтверждения...';
-    });
-
-    window.electronAPI.onUpdateError(msg => {
-      status.textContent = `Ошибка обновления: ${msg}`;
+      document.getElementById('progress-container').style.display = 'block';
     });
   </script>
 </body>
