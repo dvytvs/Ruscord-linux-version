@@ -8,14 +8,16 @@ export function checkInternetAndUpdate(splash) {
     dns.lookup('google.com', (err) => {
       if (err) {
         const seconds = Math.floor((Date.now() - startTime) / 1000);
-        splash.webContents.send('status-update', `Подключение к интернету (${seconds} сек)`);
+        splash.webContents.send('status-update', `Подключение к интернету... ${seconds} сек`);
         setTimeout(tryConnect, 1000);
       } else {
+        splash.webContents.send('status-update', 'Подключение успешно');
         splash.webContents.send('status-update', 'Проверка обновлений...');
         checkForUpdates(splash);
       }
     });
   }
 
+  splash.webContents.send('status-update', 'Подключение к интернету...');
   tryConnect();
 }
