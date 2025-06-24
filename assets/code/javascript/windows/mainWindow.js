@@ -6,8 +6,9 @@ export function createMainWindow() {
     height: 800,
     webPreferences: {
       nodeIntegration: false,
-      contextIsolation: true
+      contextIsolation: true,
     }
   });
+
   mainWindow.loadURL('https://app.russcord.ru');
 }
