@@ -22,6 +22,8 @@ export function showAddonsNotice() {
   modal.style.display = 'flex';
   modal.style.alignItems = 'center';
   modal.style.gap = '15px';
+  modal.style.cursor = 'default';
+  modal.style.transition = 'background-color 0.3s ease';
 
   const icon = document.createElement('img');
   icon.src = './assets/Images/addons.png';
@@ -31,6 +33,8 @@ export function showAddonsNotice() {
   icon.style.left = '15px';
   icon.style.top = '50%';
   icon.style.transform = 'translateY(-50%)';
+  icon.style.filter = 'brightness(1)';
+  icon.style.transition = 'filter 0.3s ease';
 
   const content = document.createElement('div');
   content.style.flex = '1';
@@ -40,7 +44,7 @@ export function showAddonsNotice() {
   h2.style.margin = '0 0 10px 0';
 
   const p = document.createElement('p');
-  p.innerText = 'Расширения скоро будут следите за обновлениями.';
+  p.innerText = 'Расширения скоро будут, следите за обновлениями.';
   p.style.margin = '0';
 
   content.appendChild(h2);
@@ -59,12 +63,33 @@ export function showAddonsNotice() {
   closeBtn.style.userSelect = 'none';
   closeBtn.style.lineHeight = '1';
   closeBtn.style.padding = '0';
+  closeBtn.style.transition = 'color 0.3s ease';
 
   closeBtn.onmouseenter = () => closeBtn.style.color = '#00aa00';
   closeBtn.onmouseleave = () => closeBtn.style.color = 'white';
 
   closeBtn.onclick = () => {
     document.body.removeChild(overlay);
+  };
+
+  modal.onmouseenter = () => {
+    modal.style.backgroundColor = '#252525';
+    icon.style.filter = 'brightness(1.3)';
+  };
+
+  modal.onmouseleave = () => {
+    modal.style.backgroundColor = '#121212';
+    icon.style.filter = 'brightness(1)';
+  };
+
+  modal.onmousedown = () => {
+    modal.style.backgroundColor = '#2a3040';
+    icon.style.filter = 'brightness(0.85)';
+  };
+
+  modal.onmouseup = () => {
+    modal.style.backgroundColor = '#252525';
+    icon.style.filter = 'brightness(1.3)';
   };
 
   modal.appendChild(icon);
