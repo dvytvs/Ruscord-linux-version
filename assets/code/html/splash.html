@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Ruscord Загрузка</title>
   <style>
     html, body {
@@ -15,6 +15,7 @@
       align-items: center;
       justify-content: center;
       height: 100%;
+      user-select: none;
     }
 
     #logo {
@@ -33,6 +34,8 @@
       margin-top: 20px;
       font-size: 14px;
       text-align: center;
+      min-height: 20px;
+      white-space: nowrap;
     }
 
     #progress-container {
@@ -54,26 +57,25 @@
   </style>
 </head>
 <body>
-  <img id="logo" src="./assets/Images/logonobg.png" alt="Ruscord logo">
+  <img id="logo" src="./assets/Images/logonobg.png" alt="Ruscord logo" draggable="false" />
   <div id="status">Проверка подключения к интернету...</div>
   <div id="progress-container">
     <div id="progress-bar"></div>
   </div>
 
   <script>
-    let startTime = null;
     let interval = null;
 
     window.electronAPI.onStatusUpdate((text) => {
-      const status = document.getElementById('status');
-      status.innerText = text;
+      const statusEl = document.getElementById('status');
+      statusEl.innerText = text;
 
       if (text.startsWith('Подключение к интернету')) {
-        if (!startTime) {
-          startTime = Date.now();
+        if (!interval) {
+          let seconds = 0;
           interval = setInterval(() => {
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            status.innerText = `Подключение к интернету... ${elapsed} сек`;
+            seconds++;
+            statusEl.innerText = `Подключение к интернету... ${seconds} сек`;
           }, 1000);
         }
       } else {
