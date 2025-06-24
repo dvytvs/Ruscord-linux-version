@@ -12,11 +12,10 @@ export function createSplash() {
     resizable: false,
     frame: false,
     alwaysOnTop: true,
-    backgroundColor: '#121212',
     webPreferences: {
-      preload: path.join(__dirname, '../../preload/splash-preload.js'),
+      preload: path.join(__dirname, '../preload/splash-preload.js'),
       contextIsolation: true,
-      nodeIntegration: false
+      nodeIntegration: false,
     }
   });
 
