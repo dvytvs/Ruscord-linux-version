@@ -40,7 +40,7 @@ export function showAddonsNotice() {
   h2.style.margin = '0 0 10px 0';
 
   const p = document.createElement('p');
-  p.innerText = 'Функция «Аддоны» будет добавлена в следующих версиях.';
+  p.innerText = 'Расширения скоро будут следите за обновлениями.';
   p.style.margin = '0';
 
   content.appendChild(h2);
