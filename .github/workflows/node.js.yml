@@ -25,7 +25,14 @@ jobs:
       - name: Установка зависимостей
         run: |
           npm install -g npm@11
-          npm ci
+          if [ -f package-lock.json ]; then
+            echo "Using npm ci"
+            npm ci
+          else
+            echo "No package-lock.json found, running npm install"
+            npm install
+          fi
+
 
       # --- Билд для x64 ---
       - name: Билд для x64
@@ -70,45 +77,3 @@ jobs:
 
       - name: Очистка dist перед ia32
         run: rm -rf dist/*
-
-      # --- Билд для ia32 ---
-      - name: Билд для ia32
-        run: |
-          npx electron-builder --linux --ia32 --publish=never
-
-      - name: Загрузка артефактов ia32 (.deb)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-ia32-deb
-          path: dist/*.deb
-
-      - name: Загрузка артефактов ia32 (.rpm)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-ia32-rpm
-          path: dist/*.rpm
-
-      - name: Загрузка артефактов ia32 (.tar.xz)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-ia32-tarxz
-          path: dist/*.tar.xz
-
-      - name: Загрузка артефактов ia32 (.snap)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-ia32-snap
-          path: dist/*.snap
-
-      - name: Загрузка артефактов ia32 (.AppImage)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-ia32-appimage
-          path: dist/*.AppImage
-
-      - name: Загрузка артефактов ia32 (.pacman)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-ia32-pacman
-          path: dist/*.pacman
-          
