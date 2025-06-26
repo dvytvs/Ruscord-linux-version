@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/settings.css">
+</head>
+<body>
+  <div id="rc-settings-overlay">
+    <div id="rc-settings-modal">
+      <div id="rc-settings-warning"></div>
+      <div id="rc-settings-controls"></div>
+      <div id="rc-settings-buttons-row">
+        <button class="rc-btn" id="rc-import-btn"></button>
+        <button class="rc-btn" id="rc-export-btn"></button>
+        <button class="rc-btn" id="rc-close-btn"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- иконка -->
+  <button id="rc-settings-open-btn">
+    <img src="./assets/images/settings.png" alt="Настройки">
+  </button>
+
+  <template id="rc-switch-template">
+    <div class="rc-setting-row">
+      <span class="rc-label"></span>
+      <div class="rc-switch">
+        <div class="rc-switch-handle"></div>
+      </div>
+    </div>
+  </template>
+
+  <template id="rc-select-template">
+    <div class="rc-setting-row">
+      <label class="rc-label"></label>
+      <select class="rc-select"></select>
+    </div>
+  </template>
+
+  <template id="rc-section-template">
+    <h3 class="rc-section-title"></h3>
+  </template>
+
+  <script type="module" src="../javascript/settings.js"></script>
+</body>
+</html>
