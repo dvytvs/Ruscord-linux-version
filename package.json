@@ -16,8 +16,6 @@
     "copyright": "Copyright © 2025 dvytvs, XZY — неофициальный клиент Ruscord",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
-      "main.js",
-      "preload.js",
       "package.json",
       "assets/**/*",
       "node_modules/**/*"
