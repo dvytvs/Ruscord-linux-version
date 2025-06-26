@@ -3,7 +3,7 @@
   "version": "1.2.9",
   "description": "Общайся и играй с друзьями в Ruscord",
   "homepage": "https://github.com/dvytvs/Ruscord-linux-version",
-  "main": "main.js",
+  "main": "assets/code/javascript/main.js",
   "scripts": {
     "start": "electron .",
     "build-renderer": "webpack --config webpack.config.js",
