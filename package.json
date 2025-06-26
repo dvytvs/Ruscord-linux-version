@@ -17,6 +17,7 @@
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
       "package.json",
+      "main.js",
       "assets/**/*",
       "node_modules/**/*"
     ],
