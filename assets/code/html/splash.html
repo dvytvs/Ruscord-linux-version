@@ -2,11 +2,13 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ruscord Загрузка</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
+      height: 100vh;
       background: #121212;
       color: #ffffff;
       font-family: sans-serif;
@@ -14,22 +16,22 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100%;
       user-select: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
     }
-
+    body.loaded {
+      opacity: 1;
+    }
     #logo {
       width: 150px;
       height: 150px;
       animation: pulse 2s infinite;
     }
-
     @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
-
     #status {
       margin-top: 20px;
       font-size: 14px;
@@ -37,7 +39,6 @@
       min-height: 20px;
       white-space: nowrap;
     }
-
     #progress-container {
       margin-top: 10px;
       width: 80%;
@@ -47,12 +48,12 @@
       overflow: hidden;
       display: none;
     }
-
     #progress-bar {
       height: 100%;
       width: 0%;
-      background: #00ff00;
-      transition: width 0.2s ease;
+      background: #7289da;
+      box-shadow: 0 0 8px #7289da;
+      transition: width 0.3s ease;
     }
   </style>
 </head>
@@ -62,35 +63,40 @@
   <div id="progress-container">
     <div id="progress-bar"></div>
   </div>
-
   <script>
-    let interval = null;
-
+    document.body.classList.add('loaded')
+    let interval = null
     window.electronAPI.onStatusUpdate((text) => {
-      const statusEl = document.getElementById('status');
-      statusEl.innerText = text;
-
+      const statusEl = document.getElementById('status')
+      statusEl.innerText = text
       if (text.startsWith('Подключение к интернету')) {
         if (!interval) {
-          let seconds = 0;
+          let seconds = 0
           interval = setInterval(() => {
-            seconds++;
-            statusEl.innerText = `Подключение к интернету... ${seconds} сек`;
-          }, 1000);
+            seconds++
+            statusEl.innerText = `Подключение к интернету... ${seconds} сек`
+          }, 1000)
         }
       } else {
         if (interval) {
-          clearInterval(interval);
-          interval = null;
+          clearInterval(interval)
+          interval = null
         }
       }
-    });
-
+    })
     window.electronAPI.onProgressUpdate((percent) => {
-      const bar = document.getElementById('progress-bar');
-      bar.style.width = `${percent}%`;
-      document.getElementById('progress-container').style.display = 'block';
-    });
+      const bar = document.getElementById('progress-bar')
+      bar.style.width = `${percent}%`
+      document.getElementById('progress-container').style.display = 'block'
+      if (percent >= 100) {
+        setTimeout(() => {
+          document.body.style.opacity = '0'
+          setTimeout(() => {
+            window.electronAPI.sendSplashFinished()
+          }, 500)
+        }, 300)
+      }
+    })
   </script>
 </body>
 </html>
