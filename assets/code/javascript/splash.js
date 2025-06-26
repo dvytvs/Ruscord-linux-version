@@ -50,6 +50,23 @@ function downloadFile(url, dest, onProgress) {
   });
 }
 
+function formatBytes(bytes, decimals = 2) {
+  if (bytes === 0) return '0 Б';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+
+  if (bytes < 1) {
+    const bits = bytes * 8;
+    return bits.toFixed(dm) + ' бит';
+  }
+
+  const sizes = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ', 'ПБ'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const index = i >= sizes.length ? sizes.length - 1 : i;
+
+  return parseFloat((bytes / Math.pow(k, index)).toFixed(dm)) + ' ' + sizes[index];
+}
+
 export function showSplash() {
   return new Promise(async (resolve, reject) => {
     const preloadPath = path.join(__dirname, 'splash-preload-temp.js');
@@ -149,14 +166,5 @@ export function showSplash() {
       resolve();
     });
   });
-}
-
-function formatBytes(bytes, decimals = 2) {
-  if (bytes === 0) return '0 Б';
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-                    }
-  
+                     }
+                  
