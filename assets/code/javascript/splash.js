@@ -6,9 +6,11 @@ import https from 'https';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const GITHUB_API_RELEASES = 'https://api.github.com/repos/dvytvs/Ruscord-linux-version/releases/latest';
 
-const FORMATS = ['deb', 'rpm', 'pacman', 'tar.xz', 'appimage', 'snap'];
+const GITHUB_API_RELEASES = 'https://api.github.com/repos/dvytvs/Ruscord-linux-version/releases/latest';
+const DOWNLOAD_DIR = path.join(__dirname, '../../downloads');
+
+const DISTROS = ['deb', 'rpm', 'pacman', 'tar.xz', 'appimage', 'snap'];
 
 function detectLinuxDistro() {
   if (process.platform !== 'linux') return null;
@@ -48,57 +50,57 @@ function downloadFile(url, dest, onProgress) {
   });
 }
 
-function formatBytes(bytes) {
-  if (bytes === 0) return '0 Б';
-  const k = 1024;
-  const sizes = ['Б', 'КБ', 'МБ', 'ГБ'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-}
-
 export function showSplash() {
   return new Promise(async (resolve, reject) => {
+    const preloadPath = path.join(__dirname, 'splash-preload-temp.js');
+    fs.writeFileSync(preloadPath, `
+      const { contextBridge, ipcRenderer } = require('electron');
+      contextBridge.exposeInMainWorld('electronAPI', {
+        sendReady: () => ipcRenderer.send('splash-ready'),
+        onProgressUpdate: (cb) => ipcRenderer.on('progress-update', (event, downloaded, total) => cb(downloaded, total)),
+        onStatusUpdate: (cb) => ipcRenderer.on('status-update', (event, text) => cb(text))
+      });
+    `, 'utf-8');
+
     const splashWin = new BrowserWindow({
       width: 400,
       height: 300,
       frame: false,
-      resizable: false,
       transparent: true,
       alwaysOnTop: true,
+      resizable: false,
       webPreferences: {
-        preload: path.join(__dirname, 'splash-preload.js'),
-        contextIsolation: true
+        preload: preloadPath,
+        contextIsolation: true,
+        nodeIntegration: false
       }
     });
 
     splashWin.loadFile(path.join(__dirname, '../html/splash.html'));
 
-    const sendStatus = (text) => splashWin.webContents.send('status-update', text);
-    const sendProgress = (downloaded, total) => splashWin.webContents.send('progress-update', downloaded, total);
+    function sendStatus(text) {
+      splashWin.webContents.send('status-update', text);
+    }
+    function sendProgress(downloaded, total) {
+      splashWin.webContents.send('progress-update', downloaded, total);
+    }
 
+    let seconds = 0;
     sendStatus('Проверка подключения к интернету...');
-    const internetOk = await checkInternet();
-
-    if (!internetOk) {
-      let seconds = 0;
-      const interval = setInterval(() => {
-        seconds += 1;
-        sendStatus(`Проверка подключения к интернету... ${seconds} сек`);
-      }, 1000);
-      setTimeout(() => {
-        clearInterval(interval);
-        splashWin.close();
-        reject(new Error('Нет подключения к интернету'));
-      }, 6000);
-      return;
+    while (true) {
+      const connected = await checkInternet();
+      if (connected) break;
+      seconds++;
+      sendStatus(`Проверка подключения к интернету... ${seconds} сек`);
+      await new Promise(r => setTimeout(r, 1000));
     }
 
     sendStatus('Проверка обновлений...');
 
     try {
-      const release = await new Promise((res, rej) => {
+      const releasesRes = await new Promise((res, rej) => {
         https.get(GITHUB_API_RELEASES, {
-          headers: { 'User-Agent': 'Ruscord-Updater' }
+          headers: { 'User-Agent': 'Ruscord-Updater', 'Accept': 'application/vnd.github.v3+json' }
         }, (resp) => {
           let data = '';
           resp.on('data', chunk => data += chunk);
@@ -107,27 +109,24 @@ export function showSplash() {
         }).on('error', rej);
       });
 
-      const linuxDistro = detectLinuxDistro();
-      const asset = release.assets.find(a => {
-        const name = a.name.toLowerCase();
-        return FORMATS.some(f => name.includes(f)) && name.includes(linuxDistro);
-      });
+      if (!releasesRes.assets) throw new Error('Нет файлов обновления');
+
+      const distro = detectLinuxDistro();
+      const asset = releasesRes.assets.find(a => DISTROS.some(d => a.name.toLowerCase().includes(distro || d)));
 
       if (!asset) {
-        sendStatus('Обновлений нет. Запуск...');
+        sendStatus('Обновлений нет');
         setTimeout(() => {
-          splashWin.close();
-          resolve();
+          splashWin.webContents.executeJavaScript('window.electronAPI.sendReady()');
         }, 1000);
         return;
       }
 
-      const destPath = path.join(__dirname, '../../downloads', asset.name);
-      if (!fs.existsSync(path.dirname(destPath))) {
-        fs.mkdirSync(path.dirname(destPath), { recursive: true });
-      }
+      if (!fs.existsSync(DOWNLOAD_DIR)) fs.mkdirSync(DOWNLOAD_DIR, { recursive: true });
+      const destPath = path.join(DOWNLOAD_DIR, asset.name);
 
       sendStatus(`Скачивание обновления: ${asset.name}`);
+
       await downloadFile(asset.browser_download_url, destPath, (downloaded, total) => {
         sendProgress(downloaded, total);
         sendStatus(`Скачано ${formatBytes(downloaded)} из ${formatBytes(total)}`);
@@ -135,16 +134,29 @@ export function showSplash() {
 
       sendStatus('Запуск...');
       setTimeout(() => {
-        splashWin.close();
-        resolve();
-      }, 1000);
+        splashWin.webContents.executeJavaScript('window.electronAPI.sendReady()');
+      }, 1500);
 
     } catch (e) {
-      sendStatus(`Ошибка: ${e.message}`);
-      setTimeout(() => {
-        splashWin.close();
-        reject(e);
-      }, 3000);
+      sendStatus(`Ошибка обновления: ${e.message}`);
+      setTimeout(() => splashWin.close(), 5000);
+      reject(e);
     }
+
+    ipcMain.once('splash-ready', () => {
+      if (!splashWin.isDestroyed()) splashWin.close();
+      fs.unlinkSync(preloadPath);
+      resolve();
+    });
   });
-        }
+}
+
+function formatBytes(bytes, decimals = 2) {
+  if (bytes === 0) return '0 Б';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+                    }
+  
