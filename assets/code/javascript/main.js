@@ -1,6 +1,6 @@
 import { app } from 'electron';
-import { createSplash } from './assets/code/javascript/windows/splash.js';
-import { checkInternetAndUpdate } from './assets/code/javascript/updater/internetCheck.js';
+import { createSplash } from './windows/splash.js';
+import { checkInternetAndUpdate } from './updater/internetCheck.js';
 
 app.whenReady().then(() => {
   const splash = createSplash();
