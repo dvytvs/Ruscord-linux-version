@@ -6,7 +6,6 @@
   "main": "assets/code/javascript/main.js",
   "scripts": {
     "start": "electron .",
-    "build-renderer": "webpack --config webpack.config.js",
     "dist": "npm run build-renderer && electron-builder",
     "postinstall": "electron-builder install-app-deps"
   },
