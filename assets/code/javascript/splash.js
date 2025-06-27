@@ -2,13 +2,13 @@ import { BrowserWindow } from 'electron'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import https from 'https'
-import { execSync } from 'child_process'
+import fs from 'fs'
 
 function getPackageExtension() {
   if (process.env.SNAP) return 'snap'
   if (process.platform === 'linux') {
     try {
-      const osRelease = execSync('cat /etc/os-release').toString().toLowerCase()
+      const osRelease = fs.readFileSync('/etc/os-release').toString().toLowerCase()
       if (osRelease.includes('arch')) return 'pacman'
       if (osRelease.includes('fedora') || osRelease.includes('centos') || osRelease.includes('red hat')) return 'rpm'
       if (osRelease.includes('debian') || osRelease.includes('ubuntu')) return 'deb'
@@ -102,4 +102,5 @@ export function showSplash() {
     }
     splash.webContents.on('did-fail-load', () => reject())
   })
-      }
+          }
+    
