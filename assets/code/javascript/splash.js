@@ -69,15 +69,7 @@ function formatBytes(bytes, decimals = 2) {
 
 export function showSplash() {
   return new Promise(async (resolve, reject) => {
-    const preloadPath = path.join(__dirname, 'splash-preload-temp.js');
-    fs.writeFileSync(preloadPath, `
-      const { contextBridge, ipcRenderer } = require('electron');
-      contextBridge.exposeInMainWorld('electronAPI', {
-        sendReady: () => ipcRenderer.send('splash-ready'),
-        onProgressUpdate: (cb) => ipcRenderer.on('progress-update', (event, downloaded, total) => cb(downloaded, total)),
-        onStatusUpdate: (cb) => ipcRenderer.on('status-update', (event, text) => cb(text))
-      });
-    `, 'utf-8');
+    const preloadPath = path.join(__dirname, 'splash-preload.js');
 
     const splashWin = new BrowserWindow({
       width: 400,
@@ -162,9 +154,7 @@ export function showSplash() {
 
     ipcMain.once('splash-ready', () => {
       if (!splashWin.isDestroyed()) splashWin.close();
-      fs.unlinkSync(preloadPath);
       resolve();
     });
   });
-                     }
-                  
+          }
