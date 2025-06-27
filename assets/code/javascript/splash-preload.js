@@ -1,7 +1,5 @@
-const { contextBridge, ipcRenderer } = require('electron');
-
-contextBridge.exposeInMainWorld('electronAPI', {
-  sendReady: () => ipcRenderer.send('splash-ready'),
-  onProgressUpdate: (cb) => ipcRenderer.on('progress-update', (event, downloaded, total) => cb(downloaded, total)),
-  onStatusUpdate: (cb) => ipcRenderer.on('status-update', (event, text) => cb(text))
-});
+import { contextBridge, ipcRenderer } from 'electron'
+contextBridge.exposeInMainWorld('splashAPI', {
+  onStatus: cb => ipcRenderer.on('splash-status', (_, text) => cb(text)),
+  onProgress: cb => ipcRenderer.on('splash-progress', (_, d, t) => cb({ downloaded: d, total: t }))
+})
