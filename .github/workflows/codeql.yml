@@ -1,4 +1,4 @@
-name: "CodeQL for Ruscord"
+name: "CodeQL Security Scan for Ruscord client"
 
 on:
   push:
@@ -10,42 +10,32 @@ on:
 
 jobs:
   analyze:
-    name: Analyze (${{ matrix.language }})
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    name: Analyze JavaScript/TypeScript Electron
+    runs-on: ubuntu-latest
     permissions:
       security-events: write
       packages: read
       actions: read
       contents: read
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - language: actions
-            build-mode: none
-          - language: javascript-typescript
-            build-mode: none
-
     steps:
-      - name: Checkout repository
+      - name: Checkout репозиторий
         uses: actions/checkout@v4
 
-      - name: Initialize CodeQL
+      - name: Инициализировать CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.build-mode }}
-          # queries: +security-extended,security-and-quality  # Можно раскомментировать для расширенных проверок
+          languages: javascript-typescript
+          build-mode: manual
+          queries: security-extended,security-and-quality
 
-      - if: matrix.build-mode == 'manual'
-        shell: bash
-        run: |
-          echo 'Manual build mode выбран. Добавьте команды сборки вашего проекта.'
-          exit 1
+      - name: Скачать библиотеки
+        run: npm install
 
-      - name: Perform CodeQL Analysis
+      - name: билд
+        run: npm run dist
+
+      - name: Выполнить CodeQL аналактику
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:${{ matrix.language }}"
-          
+          category: "/language:javascript"
