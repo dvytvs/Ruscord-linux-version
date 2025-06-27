@@ -41,7 +41,7 @@
       "category": "Chat",
       "maintainer": "dvytvs <zapretsystem445@proton.me>",
       "synopsis": "Общайся и играй с друзьями в Ruscord",
-      "asar": true
+      "asar": false
     },
     "nsis": {
       "oneClick": false,
