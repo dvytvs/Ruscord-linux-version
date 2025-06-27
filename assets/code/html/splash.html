@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <style>
     body {
       margin: 0;
@@ -19,8 +19,12 @@
       animation: pulse 1.5s ease-in-out infinite;
     }
     @keyframes pulse {
-      0%,100% { transform: scale(1); }
-      50%    { transform: scale(1.1); }
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
     }
     #status {
       margin-top: 20px;
@@ -43,7 +47,7 @@
   </style>
 </head>
 <body>
-  <img src="../../Images/iconnobg.png" alt="icon">
+  <img src="../../Images/iconnobg.png" alt="icon" />
   <div id="status">Проверка подключения...</div>
   <div id="progress-container">
     <div id="progress-bar"></div>
@@ -61,9 +65,9 @@
     function formatBytes(bytes) {
       if (bytes === 0) return '0 Б'
       const k = 1024
-      const sizes = ['Б','КБ','МБ','ГБ','ТБ','ПТ']
+      const sizes = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ', 'ПТ']
       const i = Math.floor(Math.log(bytes) / Math.log(k))
-      return (bytes / k**i).toFixed(2) + ' ' + sizes[i]
+      return (bytes / k ** i).toFixed(2) + ' ' + sizes[i]
     }
   </script>
 </body>
