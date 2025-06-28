@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
-contextBridge.exposeInMainWorld('splashAPI', {
-  onStatus: cb => ipcRenderer.on('splash-status', (_, text) => cb(text)),
-  onProgress: cb => ipcRenderer.on('splash-progress', (_, d, t) => cb({ downloaded: d, total: t }))
+
+contextBridge.exposeInMainWorld('electron', {
+  onStatus: callback => ipcRenderer.on('splash-status', (event, text) => callback(text)),
+  onProgress: callback => ipcRenderer.on('splash-progress', (event, downloaded, total) => callback(downloaded, total)),
 })
