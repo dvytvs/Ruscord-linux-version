@@ -1,74 +1,86 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <style>
-    body {
-      margin: 0;
-      background: #121212;
-      color: #fff;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    img {
-      width: 64px;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.1);
-      }
-    }
-    #status {
-      margin-top: 20px;
-      font-size: 14px;
-      text-align: center;
-    }
-    #progress-container {
-      width: 80%;
-      height: 10px;
-      background: #2a2a2a;
-      border-radius: 5px;
-      margin-top: 15px;
-      overflow: hidden;
-    }
-    #progress-bar {
-      width: 0;
-      height: 100%;
-      background: #555;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=300, initial-scale=1" />
+<title>Ruscord Splash</title>
+<style>
+  body {
+    margin: 0;
+    background-color: #121212;
+    color: white;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    user-select: none;
+  }
+  .icon {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 20px;
+    animation: heartbeat 1.5s infinite;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  .status-text {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  .progress-wrapper {
+    width: 80%;
+    height: 12px;
+    background: #2c2c2c;
+    border-radius: 6px;
+    overflow: hidden;
+    display: none;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 0;
+    background: #555555;
+    border-radius: 6px;
+    transition: width 0.3s ease;
+  }
+</style>
 </head>
 <body>
-  <img src="../../Images/iconnobg.png" alt="icon" />
-  <div id="status">Проверка подключения...</div>
-  <div id="progress-container">
-    <div id="progress-bar"></div>
+  <img class="icon" src="../../Images/iconnobg.png" alt="Icon" />
+  <div class="status-text" id="status">Подключение к интернету...</div>
+  <div class="progress-wrapper">
+    <div class="progress-bar"></div>
   </div>
-  <script>
-    window.splashAPI.onStatus(text => {
-      document.getElementById('status').textContent = text
-    })
-    window.splashAPI.onProgress(({ downloaded, total }) => {
-      const pct = total ? (downloaded / total) * 100 : 0
-      document.getElementById('progress-bar').style.width = pct + '%'
-      document.getElementById('status').textContent =
-        `Скачано ${formatBytes(downloaded)} из ${formatBytes(total)}`
-    })
-    function formatBytes(bytes) {
-      if (bytes === 0) return '0 Б'
-      const k = 1024
-      const sizes = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ', 'ПТ']
-      const i = Math.floor(Math.log(bytes) / Math.log(k))
-      return (bytes / k ** i).toFixed(2) + ' ' + sizes[i]
+<script>
+  window.electron.onStatus(text => {
+    const statusElem = document.getElementById('status')
+    statusElem.textContent = text
+    if (text === 'Запуск...') {
+      document.querySelector('.progress-wrapper').style.display = 'none'
     }
-  </script>
+  })
+  window.electron.onProgress((downloaded, total) => {
+    const wrapper = document.querySelector('.progress-wrapper')
+    const bar = document.querySelector('.progress-bar')
+    wrapper.style.display = 'block'
+    const percent = downloaded / total
+    bar.style.width = `${Math.min(100, percent * 100)}%`
+    const statusElem = document.getElementById('status')
+    statusElem.textContent = `Скачано ${formatBytes(downloaded)} из ${formatBytes(total)}`
+  })
+  function formatBytes(bytes) {
+    const units = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ', 'ПТ']
+    let i = 0
+    let num = bytes
+    while (num >= 1024 && i < units.length - 1) {
+      num /= 1024
+      i++
+    }
+    return `${num.toFixed(1)} ${units[i]}`
+  }
+</script>
 </body>
 </html>
