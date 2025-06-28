@@ -7,12 +7,6 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-let updateDownloadReq
-let updateDownloadFile
-let updateTotal = 0
-let updateDownloaded = 0
-let checkStartTime = 0
-
 function safeSend(window, channel, ...args) {
   if (window && !window.isDestroyed() && window.webContents && !window.webContents.isDestroyed()) {
     window.webContents.send(channel, ...args)
@@ -34,7 +28,7 @@ function checkInternet() {
         method: 'HEAD',
         timeout: 3000,
       },
-      res => resolve(true)
+      () => resolve(true)
     )
     req.on('error', () => resolve(false))
     req.on('timeout', () => {
@@ -47,13 +41,12 @@ function checkInternet() {
 
 async function waitForInternet(window) {
   sendStatus(window, 'Проверка подключения...')
-  checkStartTime = Date.now()
+  const startCheck = Date.now()
   await sleep(5000)
-
   while (true) {
     const connected = await checkInternet()
     if (connected) break
-    const elapsedSec = Math.floor((Date.now() - checkStartTime) / 1000)
+    const elapsedSec = Math.floor((Date.now() - startCheck) / 1000)
     sendStatus(window, `Проверка подключения... ${elapsedSec} с`)
     await sleep(1000)
   }
@@ -87,38 +80,31 @@ function formatBytes(bytes) {
 
 function downloadUpdate(window, url) {
   return new Promise((resolve, reject) => {
-    updateDownloaded = 0
-    updateTotal = 0
-
-    updateDownloadReq = https.get(url, res => {
+    let downloaded = 0
+    let total = 0
+    const req = https.get(url, res => {
       if (res.statusCode !== 200) {
         reject(new Error(`HTTP Status ${res.statusCode}`))
         return
       }
-
-      updateTotal = parseInt(res.headers['content-length'] || '0', 10)
-      updateDownloadFile = fs.createWriteStream(path.join(app.getPath('userData'), 'update.tmp'))
+      total = parseInt(res.headers['content-length'] || '0', 10)
+      const fileStream = fs.createWriteStream(path.join(app.getPath('userData'), 'update.tmp'))
 
       res.on('data', chunk => {
-        updateDownloaded += chunk.length
-        sendProgress(window, updateDownloaded, updateTotal)
+        downloaded += chunk.length
+        sendProgress(window, downloaded, total)
+        sendStatus(window, `Скачано ${formatBytes(downloaded)} из ${formatBytes(total)}`)
       })
 
-      res.pipe(updateDownloadFile)
+      res.pipe(fileStream)
 
-      updateDownloadFile.on('finish', () => {
-        updateDownloadFile.close()
+      fileStream.on('finish', () => {
+        fileStream.close()
         resolve()
       })
-
-      updateDownloadFile.on('error', err => {
-        reject(err)
-      })
+      fileStream.on('error', err => reject(err))
     })
-
-    updateDownloadReq.on('error', err => {
-      reject(err)
-    })
+    req.on('error', err => reject(err))
   })
 }
 
@@ -134,13 +120,10 @@ async function checkForUpdates(window) {
     case 'tar.xz': assetName = 'Ruscord.tar.xz'; break
     default: assetName = 'Ruscord.tar.xz'
   }
-
   const updateUrl = `https://github.com/dvytvs/Ruscord-linux-version/releases/latest/download/${assetName}`
-
   try {
     await downloadUpdate(window, updateUrl)
-  } catch {
-  }
+  } catch {}
 }
 
 async function showSplash() {
