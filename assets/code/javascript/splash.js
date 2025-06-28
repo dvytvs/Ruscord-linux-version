@@ -1,106 +1,171 @@
-import { BrowserWindow } from 'electron'
+import { app, BrowserWindow } from 'electron'
 import path from 'path'
-import { fileURLToPath } from 'url'
-import https from 'https'
 import fs from 'fs'
+import https from 'https'
+import { fileURLToPath } from 'url'
 
-function getPackageExtension() {
-  if (process.env.SNAP) return 'snap'
-  if (process.platform === 'linux') {
-    try {
-      const osRelease = fs.readFileSync('/etc/os-release').toString().toLowerCase()
-      if (osRelease.includes('arch')) return 'pacman'
-      if (osRelease.includes('fedora') || osRelease.includes('centos') || osRelease.includes('red hat')) return 'rpm'
-      if (osRelease.includes('debian') || osRelease.includes('ubuntu')) return 'deb'
-    } catch {}
-    return 'tar.xz'
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+let updateDownloadReq
+let updateDownloadFile
+let updateTotal = 0
+let updateDownloaded = 0
+let checkStartTime = 0
+
+function safeSend(window, channel, ...args) {
+  if (window && !window.isDestroyed() && window.webContents && !window.webContents.isDestroyed()) {
+    window.webContents.send(channel, ...args)
   }
-  if (process.platform === 'win32') return 'exe'
-  if (process.platform === 'darwin') return 'dmg'
-  return 'tar.xz'
 }
 
-export function showSplash() {
-  return new Promise((resolve, reject) => {
-    const __filename = fileURLToPath(import.meta.url)
-    const __dirname = path.dirname(__filename)
-    const splash = new BrowserWindow({
-      width: 300,
-      height: 400,
-      frame: false,
-      transparent: false,
-      backgroundColor: '#121212',
-      resizable: false,
-      alwaysOnTop: true,
-      webPreferences: {
-        preload: path.join(__dirname, 'splash-preload.js'),
-        contextIsolation: true,
-        nodeIntegration: false
-      }
+const sendStatus = (window, text) => safeSend(window, 'splash-status', text)
+const sendProgress = (window, downloaded, total) => safeSend(window, 'splash-progress', downloaded, total)
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+function checkInternet() {
+  return new Promise(resolve => {
+    const req = https.request(
+      {
+        hostname: 'russcord.ru',
+        method: 'HEAD',
+        timeout: 3000,
+      },
+      res => resolve(true)
+    )
+    req.on('error', () => resolve(false))
+    req.on('timeout', () => {
+      req.destroy()
+      resolve(false)
     })
-    splash.center()
-    splash.loadFile(path.join(__dirname, '../html/splash.html'))
-    const sendStatus = text => splash.webContents.send('splash-status', text)
-    const sendProgress = (downloaded, total) => splash.webContents.send('splash-progress', downloaded, total)
-    sendStatus('Проверка подключения...')
-    let startCountTime = null
-    const pingUrl = 'https://russcord.ru'
-    const pingInterval = setInterval(async () => {
-      try {
-        await fetch(pingUrl, { method: 'HEAD' })
-        clearInterval(pingInterval)
-        checkUpdates()
-      } catch {
-        if (!startCountTime) {
-          setTimeout(() => {
-            startCountTime = Date.now()
-          }, 5000)
-        }
-        if (startCountTime) {
-          const seconds = Math.floor((Date.now() - startCountTime) / 1000)
-          sendStatus(`Проверка подключения... ${seconds}s`)
-        }
-      }
-    }, 1000)
-    async function checkUpdates() {
-      sendStatus('Проверка обновления...')
-      try {
-        const res = await fetch(
-          'https://api.github.com/repos/dvytvs/Ruscord-linux-version/releases/latest',
-          { headers: { 'User-Agent': 'Ruscord-Updater' } }
-        )
-        const release = await res.json()
-        const ext = getPackageExtension()
-        let asset = release.assets.find(a => a.name.toLowerCase().endsWith(ext.toLowerCase()))
-        if (!asset) {
-          const exts = ['deb', 'appimage', 'snap', 'tar.xz', 'rpm', 'pacman']
-          asset = release.assets.find(a => exts.some(e => a.name.toLowerCase().endsWith(e)))
-        }
-        if (asset) {
-          await downloadAsset(asset.browser_download_url, asset.size)
-        }
-      } catch {}
-      sendStatus('Запуск...')
-      setTimeout(() => {
-        splash.close()
-        resolve()
-      }, 500)
-    }
-    function downloadAsset(url, totalSize) {
-      return new Promise((res, rej) => {
-        let downloaded = 0
-        https.get(url, response => {
-          response.on('data', chunk => {
-            downloaded += chunk.length
-            sendStatus(`Скачано ${downloaded} из ${totalSize}`)
-            sendProgress(downloaded, totalSize)
-          })
-          response.on('end', () => res())
-          response.on('error', rej)
-        }).on('error', rej)
-      })
-    }
-    splash.webContents.on('did-fail-load', () => reject())
+    req.end()
   })
-          }
-    
+}
+
+async function waitForInternet(window) {
+  sendStatus(window, 'Проверка подключения...')
+  checkStartTime = Date.now()
+  await sleep(5000)
+
+  while (true) {
+    const connected = await checkInternet()
+    if (connected) break
+    const elapsedSec = Math.floor((Date.now() - checkStartTime) / 1000)
+    sendStatus(window, `Проверка подключения... ${elapsedSec} с`)
+    await sleep(1000)
+  }
+}
+
+function getPackageType() {
+  try {
+    const osRelease = fs.readFileSync('/etc/os-release').toString().toLowerCase()
+    if (osRelease.includes('arch')) return 'pacman'
+    if (osRelease.includes('ubuntu') || osRelease.includes('debian')) {
+      if (fs.existsSync('/usr/bin/snap')) return 'snap'
+      return 'deb'
+    }
+    if (osRelease.includes('fedora') || osRelease.includes('centos') || osRelease.includes('red hat')) return 'rpm'
+    return 'tar.xz'
+  } catch {
+    return 'tar.xz'
+  }
+}
+
+function formatBytes(bytes) {
+  const units = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ', 'ПТ']
+  let i = 0
+  let num = bytes
+  while (num >= 1024 && i < units.length - 1) {
+    num /= 1024
+    i++
+  }
+  return `${num.toFixed(1)} ${units[i]}`
+}
+
+function downloadUpdate(window, url) {
+  return new Promise((resolve, reject) => {
+    updateDownloaded = 0
+    updateTotal = 0
+
+    updateDownloadReq = https.get(url, res => {
+      if (res.statusCode !== 200) {
+        reject(new Error(`HTTP Status ${res.statusCode}`))
+        return
+      }
+
+      updateTotal = parseInt(res.headers['content-length'] || '0', 10)
+      updateDownloadFile = fs.createWriteStream(path.join(app.getPath('userData'), 'update.tmp'))
+
+      res.on('data', chunk => {
+        updateDownloaded += chunk.length
+        sendProgress(window, updateDownloaded, updateTotal)
+      })
+
+      res.pipe(updateDownloadFile)
+
+      updateDownloadFile.on('finish', () => {
+        updateDownloadFile.close()
+        resolve()
+      })
+
+      updateDownloadFile.on('error', err => {
+        reject(err)
+      })
+    })
+
+    updateDownloadReq.on('error', err => {
+      reject(err)
+    })
+  })
+}
+
+async function checkForUpdates(window) {
+  sendStatus(window, 'Проверка обновления...')
+  const packageType = getPackageType()
+  let assetName
+  switch (packageType) {
+    case 'deb': assetName = 'Ruscord.deb'; break
+    case 'rpm': assetName = 'Ruscord.rpm'; break
+    case 'pacman': assetName = 'Ruscord.pacman'; break
+    case 'snap': assetName = 'Ruscord.snap'; break
+    case 'tar.xz': assetName = 'Ruscord.tar.xz'; break
+    default: assetName = 'Ruscord.tar.xz'
+  }
+
+  const updateUrl = `https://github.com/dvytvs/Ruscord-linux-version/releases/latest/download/${assetName}`
+
+  try {
+    await downloadUpdate(window, updateUrl)
+  } catch {
+  }
+}
+
+async function showSplash() {
+  const splash = new BrowserWindow({
+    width: 300,
+    height: 400,
+    frame: false,
+    resizable: false,
+    alwaysOnTop: true,
+    backgroundColor: '#121212',
+    icon: path.join(__dirname, '../../Images/iconnobg.png'),
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      preload: path.join(__dirname, '../preload/splash-preload.js'),
+    },
+  })
+
+  splash.loadFile(path.join(__dirname, '../html/splash.html'))
+
+  await waitForInternet(splash)
+  await checkForUpdates(splash)
+  sendStatus(splash, 'Запуск...')
+
+  return splash
+}
+
+export { showSplash }
