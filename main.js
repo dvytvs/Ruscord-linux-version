@@ -1,26 +1,37 @@
-import { app, BrowserWindow, Menu, shell } from 'electron';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { showSplash } from './assets/code/javascript/splash.js';
+import { app, BrowserWindow, Menu, shell } from 'electron'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { showSplash } from './assets/code/javascript/splash.js'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-async function createWindow() {
-  const win = new BrowserWindow({
+let splashWindow
+let mainWindow
+
+async function createMainWindow() {
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 800,
     minHeight: 600,
     backgroundColor: '#121212',
     icon: path.join(__dirname, 'assets', 'winicon.png'),
+    show: false,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
     },
-  });
+  })
 
-  win.loadURL('https://app.russcord.ru');
+  mainWindow.loadURL('https://app.russcord.ru')
+
+  mainWindow.once('ready-to-show', () => {
+    if (splashWindow && !splashWindow.isDestroyed()) {
+      splashWindow.close()
+    }
+    mainWindow.show()
+  })
 
   const menuTemplate = [
     {
@@ -43,30 +54,26 @@ async function createWindow() {
           label: 'Связаться с поддержкой',
           accelerator: 'F1',
           click: () => {
-            shell.openExternal('https://t.me/supruscord_bot');
+            shell.openExternal('https://t.me/supruscord_bot')
           },
         },
       ],
     },
-  ];
+  ]
 
-  const menu = Menu.buildFromTemplate(menuTemplate);
-  Menu.setApplicationMenu(menu);
+  const menu = Menu.buildFromTemplate(menuTemplate)
+  Menu.setApplicationMenu(menu)
 }
 
 app.whenReady().then(async () => {
-  try {
-    await showSplash();
-  } catch (e) {
-    console.error('Ошибка в splash:', e);
-  }
-  await createWindow();
-});
+  splashWindow = await showSplash()
+  await createMainWindow()
+})
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
+  if (process.platform !== 'darwin') app.quit()
+})
 
 app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
-});
+  if (BrowserWindow.getAllWindows().length === 0) createMainWindow()
+})
