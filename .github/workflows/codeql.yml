@@ -19,23 +19,17 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout репозиторий
+      - name: Checkout репозитория
         uses: actions/checkout@v4
 
-      - name: Инициализировать CodeQL
+      - name: Инициализация CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: javascript-typescript
-          build-mode: manual
+          build-mode: none
           queries: security-extended,security-and-quality
 
-      - name: Скачать библиотеки
-        run: npm install
-
-      - name: билд
-        run: npm run dist
-
-      - name: Выполнить CodeQL аналактику
+      - name: Выполнение анализа CodeQL
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:javascript"
