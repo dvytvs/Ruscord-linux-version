@@ -1,52 +1,58 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=300, initial-scale=1" />
-<title>Ruscord Splash</title>
-<style>
-  body {
-    margin: 0;
-    background-color: #121212;
-    color: white;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    user-select: none;
-  }
-  .icon {
-    width: 120px;
-    height: 120px;
-    margin-bottom: 20px;
-    animation: heartbeat 1.5s infinite;
-  }
-  @keyframes heartbeat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-  }
-  .status-text {
-    font-size: 16px;
-    margin-bottom: 20px;
-  }
-  .progress-wrapper {
-    width: 80%;
-    height: 12px;
-    background: #2c2c2c;
-    border-radius: 6px;
-    overflow: hidden;
-    display: none;
-  }
-  .progress-bar {
-    height: 100%;
-    width: 0;
-    background: #555555;
-    border-radius: 6px;
-    transition: width 0.3s ease;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=300, initial-scale=1, user-scalable=no" />
+  <title>Ruscord Splash</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #121212;
+      color: white;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      user-select: none;
+    }
+
+    .icon {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 20px;
+      animation: heartbeat 1.5s infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .status-text {
+      font-size: 16px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .progress-wrapper {
+      width: 80%;
+      height: 12px;
+      background: #2c2c2c;
+      border-radius: 6px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: #555555;
+      border-radius: 6px;
+      transition: width 0.2s ease-out;
+    }
+  </style>
 </head>
 <body>
   <img class="icon" src="../../Images/iconnobg.png" alt="Icon" />
@@ -54,33 +60,40 @@
   <div class="progress-wrapper">
     <div class="progress-bar"></div>
   </div>
-<script>
-  window.electron.onStatus(text => {
-    const statusElem = document.getElementById('status')
-    statusElem.textContent = text
-    if (text === 'Запуск...') {
-      document.querySelector('.progress-wrapper').style.display = 'none'
+
+  <script>
+    function formatBytes(bytes) {
+      const units = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ', 'ПТ']
+      let i = 0
+      let num = bytes
+      while (num >= 1024 && i < units.length - 1) {
+        num /= 1024
+        i++
+      }
+      return `${num.toFixed(1)} ${units[i]}`
     }
-  })
-  window.electron.onProgress((downloaded, total) => {
-    const wrapper = document.querySelector('.progress-wrapper')
-    const bar = document.querySelector('.progress-bar')
-    wrapper.style.display = 'block'
-    const percent = downloaded / total
-    bar.style.width = `${Math.min(100, percent * 100)}%`
-    const statusElem = document.getElementById('status')
-    statusElem.textContent = `Скачано ${formatBytes(downloaded)} из ${formatBytes(total)}`
-  })
-  function formatBytes(bytes) {
-    const units = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ', 'ПТ']
-    let i = 0
-    let num = bytes
-    while (num >= 1024 && i < units.length - 1) {
-      num /= 1024
-      i++
+
+    if (window.electron) {
+      window.electron.onStatus(text => {
+        const statusElem = document.getElementById('status')
+        statusElem.textContent = text
+        if (text === 'Запуск...') {
+          document.querySelector('.progress-wrapper').style.display = 'none'
+        }
+      })
+
+      window.electron.onProgress((downloaded, total) => {
+        const wrapper = document.querySelector('.progress-wrapper')
+        const bar = document.querySelector('.progress-bar')
+        wrapper.style.display = 'block'
+        const percent = downloaded / total
+        bar.style.width = `${Math.min(100, percent * 100)}%`
+        const statusElem = document.getElementById('status')
+        statusElem.textContent = `Скачано ${formatBytes(downloaded)} из ${formatBytes(total)}`
+      })
+    } else {
+      document.getElementById('status').textContent = 'Ошибка preload.';
     }
-    return `${num.toFixed(1)} ${units[i]}`
-  }
-</script>
+  </script>
 </body>
 </html>
