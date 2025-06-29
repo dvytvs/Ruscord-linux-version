@@ -3,6 +3,10 @@ const path = require('path');
 const fs = require('fs');
 const https = require('https');
 
+let isDragging = false;
+let initialX = 0;
+let initialY = 0;
+
 function safeSend(window, channel, ...args) {
   if (window && !window.isDestroyed() && window.webContents && !window.webContents.isDestroyed()) {
     window.webContents.send(channel, ...args);
@@ -18,19 +22,9 @@ function sleep(ms) {
 
 function checkInternet() {
   return new Promise(resolve => {
-    const req = https.request(
-      {
-        hostname: 'russcord.ru',
-        method: 'HEAD',
-        timeout: 3000,
-      },
-      () => resolve(true)
-    );
+    const req = https.request({hostname: 'russcord.ru', method: 'HEAD', timeout: 3000}, () => resolve(true));
     req.on('error', () => resolve(false));
-    req.on('timeout', () => {
-      req.destroy();
-      resolve(false);
-    });
+    req.on('timeout', () => {req.destroy(); resolve(false);});
     req.end();
   });
 }
@@ -122,6 +116,14 @@ async function checkForUpdates(window) {
   } catch {}
 }
 
+process.on('uncaughtException', (err) => {
+  console.error("Uncaught Exception:", err.message);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error("Unhandled Rejection at:", reason.stack || reason);
+});
+
 async function showSplash() {
   const splash = new BrowserWindow({
     width: 300,
@@ -134,8 +136,35 @@ async function showSplash() {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      preload: path.join(__dirname, '../preload/splash-preload.js'),
-    },
+      preload: path.join(__dirname, '../preload/splash-preload.js')
+    }
+  });
+
+  splash.setIgnoreMouseEvents(true);
+  splash.once('ready-to-show', () => {
+    splash.show();
+    splash.webContents.on('did-finish-load', () => {
+      splash.webContents.executeJavaScript(`
+        document.addEventListener('mousedown', e => {
+          const bounds = this.getBounds();
+          initialX = e.clientX + bounds.x - e.screenX;
+          initialY = e.clientY + bounds.y - e.screenY;
+          isDragging = true;
+        });
+        
+        document.addEventListener('mousemove', e => {
+          if (!isDragging) return;
+          
+          const x = e.screenX + initialX - e.clientX;
+          const y = e.screenY + initialY - e.clientY;
+          this.setPosition(x, y);
+        });
+        
+        document.addEventListener('mouseup', () => {
+          isDragging = false;
+        });
+      `);
+    });
   });
 
   splash.loadFile(path.join(__dirname, '../html/splash.html'));
