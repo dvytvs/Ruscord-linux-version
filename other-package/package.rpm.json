@@ -33,10 +33,10 @@
       "asar": false,
       "desktop": {
         "entry": {
-          "Name": "Ruscord",
-          "Comment": "Общайся и играй с друзьями в Ruscord",
-          "Type": "Application",
-          "Categories": "Network;Chat;"
+          "name": "Ruscord",
+          "comment": "Общайся и играй с друзьями в Ruscord",
+          "type": "Application",
+          "categories": "Network;Chat;"
         }
       }
     },
