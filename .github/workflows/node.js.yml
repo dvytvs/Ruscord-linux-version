@@ -32,7 +32,7 @@ jobs:
             npm install
           fi
 
-      - name: Сборка Debian-артефактов
+      - name: Сборка Debian-артефактов (без rpm)
         run: npx electron-builder --linux deb snap AppImage tar.xz --x64 --publish=never
 
       - name: Загрузка .deb
@@ -75,8 +75,7 @@ jobs:
       - name: Клонирование репозитория
         uses: actions/checkout@v4
 
-      - name: Установка зависимостей for other-package
-        working-directory: ./other-package/rpm
+      - name: Установка npm-зависимостей
         run: |
           npm install -g npm@11
           if [ -f package-lock.json ]; then
@@ -86,11 +85,10 @@ jobs:
           fi
 
       - name: Сборка RPM
-        working-directory: ./other-package/rpm
         run: npx electron-builder --linux rpm --x64 --publish=never
 
       - name: Загрузка .rpm
         uses: actions/upload-artifact@v4
         with:
           name: Ruscord-rpm
-          path: other-package/dist/*.rpm
+          path: dist/*.rpm
