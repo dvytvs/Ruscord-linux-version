@@ -1,11 +1,7 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
-
-let isDragging = false;
-let initialX = 0;
-let initialY = 0;
 
 function safeSend(window, channel, ...args) {
   if (window && !window.isDestroyed() && window.webContents && !window.webContents.isDestroyed()) {
@@ -14,47 +10,67 @@ function safeSend(window, channel, ...args) {
 }
 
 const sendStatus = (window, text) => safeSend(window, 'splash-status', text);
-const sendProgress = (window, downloaded, total) => safeSend(window, 'splash-progress', downloaded, total);
+const sendProgress = (window, downloaded, total, speed) => safeSend(window, 'splash-progress', downloaded, total, speed);
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function log(text) {
+  try {
+    fs.appendFileSync(path.join(app.getPath('userData'), 'splash.log'), `[${new Date().toISOString()}] ${text}\n`);
+  } catch {}
+}
+
 function checkInternet() {
   return new Promise(resolve => {
-    const req = https.request({hostname: 'russcord.ru', method: 'HEAD', timeout: 3000}, () => resolve(true));
+    const req = https.request(
+      {
+        hostname: 'russcord.ru',
+        method: 'HEAD',
+        timeout: 3000,
+      },
+      () => resolve(true)
+    );
     req.on('error', () => resolve(false));
-    req.on('timeout', () => {req.destroy(); resolve(false);});
+    req.on('timeout', () => {
+      req.destroy();
+      resolve(false);
+    });
     req.end();
   });
 }
 
-async function waitForInternet(window) {
+async function waitForInternet(window, timeout = 60000) {
   sendStatus(window, 'Проверка подключения...');
-  const startCheck = Date.now();
-  await sleep(5000);
-  while (true) {
+  const start = Date.now();
+  await sleep(1000);
+  while (Date.now() - start < timeout) {
     const connected = await checkInternet();
-    if (connected) break;
-    const elapsedSec = Math.floor((Date.now() - startCheck) / 1000);
+    if (connected) return;
+    const elapsedSec = Math.floor((Date.now() - start) / 1000);
     sendStatus(window, `Проверка подключения... ${elapsedSec} с`);
     await sleep(1000);
   }
+  sendStatus(window, 'Нет подключения к интернету');
+  log('Нет подключения к интернету за 60 секунд');
 }
 
+let cachedPackageType = null;
 function getPackageType() {
+  if (cachedPackageType) return cachedPackageType;
   try {
     const osRelease = fs.readFileSync('/etc/os-release').toString().toLowerCase();
-    if (osRelease.includes('arch')) return 'pacman';
+    if (osRelease.includes('arch')) return cachedPackageType = 'pacman';
     if (osRelease.includes('ubuntu') || osRelease.includes('debian')) {
-      if (fs.existsSync('/usr/bin/snap')) return 'snap';
-      return 'deb';
+      if (fs.existsSync('/usr/bin/snap')) return cachedPackageType = 'snap';
+      return cachedPackageType = 'deb';
     }
-    if (osRelease.includes('fedora') || osRelease.includes('centos') || osRelease.includes('red hat')) return 'rpm';
-    return 'tar.xz';
-  } catch {
-    return 'tar.xz';
-  }
+    if (osRelease.includes('fedora') || osRelease.includes('centos') || osRelease.includes('red hat')) {
+      return cachedPackageType = 'rpm';
+    }
+  } catch {}
+  return cachedPackageType = 'tar.xz';
 }
 
 function formatBytes(bytes) {
@@ -68,34 +84,70 @@ function formatBytes(bytes) {
   return `${num.toFixed(1)} ${units[i]}`;
 }
 
+let downloadReq = null;
+let downloadCancelled = false;
+
 function downloadUpdate(window, url) {
   return new Promise((resolve, reject) => {
     let downloaded = 0;
     let total = 0;
-    const req = https.get(url, res => {
+    let lastTime = Date.now();
+    let lastDownloaded = 0;
+    downloadCancelled = false;
+
+    downloadReq = https.get(url, res => {
       if (res.statusCode !== 200) {
         reject(new Error(`HTTP Status ${res.statusCode}`));
         return;
       }
       total = parseInt(res.headers['content-length'] || '0', 10);
-      const fileStream = fs.createWriteStream(path.join(app.getPath('userData'), 'update.tmp'));
+      const filePath = path.join(app.getPath('userData'), 'update.tmp');
+      const fileStream = fs.createWriteStream(filePath);
 
       res.on('data', chunk => {
+        if (downloadCancelled) {
+          downloadReq.destroy();
+          fileStream.close();
+          try { fs.unlinkSync(filePath); } catch {}
+          reject(new Error('Загрузка отменена пользователем'));
+          return;
+        }
+
         downloaded += chunk.length;
-        sendProgress(window, downloaded, total);
-        sendStatus(window, `Скачано ${formatBytes(downloaded)} из ${formatBytes(total)}`);
+
+        const now = Date.now();
+        let speed = 0;
+        if (now > lastTime) {
+          speed = (downloaded - lastDownloaded) / ((now - lastTime) / 1000);
+          lastTime = now;
+          lastDownloaded = downloaded;
+        }
+        sendProgress(window, downloaded, total, speed);
+
+        sendStatus(window, `Скачано ${formatBytes(downloaded)} из ${formatBytes(total)} (${formatBytes(speed)}/с)`);
       });
 
       res.pipe(fileStream);
 
       fileStream.on('finish', () => {
-        fileStream.close();
-        resolve();
+        fileStream.close(() => {
+          downloadReq = null;
+          resolve();
+        });
       });
       fileStream.on('error', err => reject(err));
     });
-    req.on('error', err => reject(err));
+
+    downloadReq.on('error', err => reject(err));
   });
+}
+
+function cancelDownload() {
+  downloadCancelled = true;
+  if (downloadReq) {
+    downloadReq.destroy();
+    downloadReq = null;
+  }
 }
 
 async function checkForUpdates(window) {
@@ -111,18 +163,17 @@ async function checkForUpdates(window) {
     default: assetName = 'Ruscord.tar.xz';
   }
   const updateUrl = `https://github.com/dvytvs/Ruscord-linux-version/releases/latest/download/${assetName}`;
+
   try {
     await downloadUpdate(window, updateUrl);
-  } catch {}
+    sendStatus(window, 'Обновление загружено. Установка...');
+    log('Обновление загружено успешно');
+    // Здесь можно добавить логику установки и замену файлов
+  } catch (err) {
+    sendStatus(window, `Ошибка загрузки: ${err.message}`);
+    log(`Ошибка загрузки: ${err.message}`);
+  }
 }
-
-process.on('uncaughtException', (err) => {
-  console.error("Uncaught Exception:", err.message);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error("Unhandled Rejection at:", reason.stack || reason);
-});
 
 async function showSplash() {
   const splash = new BrowserWindow({
@@ -136,44 +187,30 @@ async function showSplash() {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      preload: path.join(__dirname, '../preload/splash-preload.js')
-    }
-  });
-
-  splash.setIgnoreMouseEvents(true);
-  splash.once('ready-to-show', () => {
-    splash.show();
-    splash.webContents.on('did-finish-load', () => {
-      splash.webContents.executeJavaScript(`
-        document.addEventListener('mousedown', e => {
-          const bounds = this.getBounds();
-          initialX = e.clientX + bounds.x - e.screenX;
-          initialY = e.clientY + bounds.y - e.screenY;
-          isDragging = true;
-        });
-        
-        document.addEventListener('mousemove', e => {
-          if (!isDragging) return;
-          
-          const x = e.screenX + initialX - e.clientX;
-          const y = e.screenY + initialY - e.clientY;
-          this.setPosition(x, y);
-        });
-        
-        document.addEventListener('mouseup', () => {
-          isDragging = false;
-        });
-      `);
-    });
+      preload: path.join(__dirname, '../preload/splash-preload.js'),
+    },
   });
 
   splash.loadFile(path.join(__dirname, '../html/splash.html'));
+
+  const { ipcMain } = require('electron');
+  ipcMain.once('cancel-download', () => {
+    cancelDownload();
+  });
 
   await waitForInternet(splash);
   await checkForUpdates(splash);
   sendStatus(splash, 'Запуск...');
 
   return splash;
+}
+
+if (process.argv.includes('--check-update')) {
+  app.whenReady().then(async () => {
+    const win = new BrowserWindow({ show: false });
+    await checkForUpdates(win);
+    app.quit();
+  });
 }
 
 module.exports = { showSplash };
