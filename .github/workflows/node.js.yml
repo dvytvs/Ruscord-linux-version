@@ -27,35 +27,33 @@ jobs:
         run: |
           npm install -g npm@11
           if [ -f package-lock.json ]; then
-            echo "Используем npm ci"
             npm ci
           else
-            echo "package-lock.json не найден, запускаем npm install"
             npm install
           fi
 
-      - name: Сборка приложения
+      - name: Сборка Debian-артефактов
         run: npx electron-builder --linux deb snap AppImage tar.xz --x64 --publish=never
 
-      - name: Загрузка артефактов (.deb)
+      - name: Загрузка .deb
         uses: actions/upload-artifact@v4
         with:
           name: Ruscord-deb
           path: dist/*.deb
 
-      - name: Загрузка артефактов (.snap)
+      - name: Загрузка .snap
         uses: actions/upload-artifact@v4
         with:
           name: Ruscord-snap
           path: dist/*.snap
 
-      - name: Загрузка артефактов (.AppImage)
+      - name: Загрузка .AppImage
         uses: actions/upload-artifact@v4
         with:
           name: Ruscord-appimage
           path: dist/*.AppImage
 
-      - name: Загрузка артефактов (.tar.xz)
+      - name: Загрузка .tar.xz
         uses: actions/upload-artifact@v4
         with:
           name: Ruscord-tarxz
@@ -77,15 +75,13 @@ jobs:
       - name: Клонирование репозитория
         uses: actions/checkout@v4
 
-      - name: Установка зависимостей для other-package
+      - name: Установка зависимостей for other-package
         working-directory: ./other-package
         run: |
           npm install -g npm@11
           if [ -f package-lock.json ]; then
-            echo "Используем npm ci"
             npm ci
           else
-            echo "package-lock.json не найден, запускаем npm install"
             npm install
           fi
 
@@ -93,7 +89,7 @@ jobs:
         working-directory: ./other-package
         run: npm run dist
 
-      - name: Загрузка артефактов (.rpm)
+      - name: Загрузка .rpm
         uses: actions/upload-artifact@v4
         with:
           name: Ruscord-rpm
