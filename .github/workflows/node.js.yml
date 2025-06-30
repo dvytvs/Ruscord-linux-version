@@ -70,7 +70,7 @@ jobs:
     steps:
       - name: Установка зависимостей
         run: |
-          dnf install -y curl git rpm nodejs sudo libxcrypt-compat
+          dnf install -y curl git rpm nodejs sudo libxcrypt-compat libcrypt1
 
       - name: Клонирование репозитория
         uses: actions/checkout@v4
