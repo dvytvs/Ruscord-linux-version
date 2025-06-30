@@ -5,6 +5,7 @@ on:
 
 jobs:
   build-debian:
+    name: Build-Debian
     runs-on: ubuntu-latest
     container:
       image: debian:bullseye
@@ -12,47 +13,35 @@ jobs:
       contents: read
 
     steps:
+      - name: Установка зависимостей
+        run: |
+          apt-get update
+          apt-get install -y curl git ca-certificates binutils sudo libarchive-tools rpm libcrypt1
+          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+          apt-get install -y nodejs
+
       - name: Клонирование репозитория
         uses: actions/checkout@v4
 
-      - name: Кэш npm
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
-      - name: Установка зависимостей (Debian)
-        run: |
-          apt-get update
-          apt-get install -y curl git ca-certificates binutils sudo libarchive-tools
-          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-          apt-get install -y nodejs
-          npm install -g npm@11
-
       - name: Установка npm-зависимостей
         run: |
+          npm install -g npm@11
           if [ -f package-lock.json ]; then
+            echo "Используем npm ci"
             npm ci
           else
+            echo "package-lock.json не найден, запускаем npm install"
             npm install
           fi
 
       - name: Сборка приложения
-        run: npx electron-builder --linux --x64 --publish=never
+        run: npx electron-builder --linux deb snap AppImage tar.xz --x64 --publish=never
 
       - name: Загрузка артефактов (.deb)
         uses: actions/upload-artifact@v4
         with:
           name: Ruscord-deb
           path: dist/*.deb
-
-      - name: Загрузка артефактов (.tar.xz)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-tarxz
-          path: dist/*.tar.xz
 
       - name: Загрузка артефактов (.snap)
         uses: actions/upload-artifact@v4
@@ -66,13 +55,14 @@ jobs:
           name: Ruscord-appimage
           path: dist/*.AppImage
 
-      - name: Загрузка артефактов (.pacman)
+      - name: Загрузка артефактов (.tar.xz)
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord-pacman
-          path: dist/*.pacman
+          name: Ruscord-tarxz
+          path: dist/*.tar.xz
 
   build-fedora:
+    name: Build-Fedora
     runs-on: ubuntu-latest
     container:
       image: fedora:latest
@@ -80,40 +70,31 @@ jobs:
       contents: read
 
     steps:
+      - name: Установка зависимостей
+        run: |
+          dnf install -y curl git rpm nodejs sudo libxcrypt-compat
+
       - name: Клонирование репозитория
         uses: actions/checkout@v4
 
-      - name: Подмена package.json на rpm-версию
-        run: mv other-package/package.rpm.json package.json
-
-      - name: Кэш npm
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
-      - name: Установка зависимостей (Fedora)
+      - name: Установка зависимостей для other-package
+        working-directory: ./other-package
         run: |
-          dnf install -y curl git ca-certificates binutils sudo rpm libarchive libxcrypt-compat libarchive-tools libcrypt1
-          curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
-          dnf install -y nodejs
           npm install -g npm@11
-
-      - name: Установка npm-зависимостей
-        run: |
           if [ -f package-lock.json ]; then
+            echo "Используем npm ci"
             npm ci
           else
+            echo "package-lock.json не найден, запускаем npm install"
             npm install
           fi
 
       - name: Сборка RPM
+        working-directory: ./other-package
         run: npm run dist
 
-      - name: Загрузка .rpm
+      - name: Загрузка артефактов (.rpm)
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord-rpm-fedora
-          path: dist/*.rpm
+          name: Ruscord-rpm
+          path: other-package/dist/*.rpm
