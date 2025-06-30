@@ -37,7 +37,7 @@
       "category": "Network",
       "maintainer": "dvytvs <zapretsystem445@proton.me>",
       "synopsis": "Общайся и играй с друзьями в Ruscord",
-      "asar": false
+      "asar": false,
       "depends": [
         "gtk3",
         "libnotify",
