@@ -96,7 +96,7 @@ jobs:
 
       - name: Установка зависимостей (Fedora)
         run: |
-          dnf install -y curl git ca-certificates binutils sudo rpm libarchive
+          dnf install -y curl git ca-certificates binutils sudo rpm libarchive libxcrypt-compat
           curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
           dnf install -y nodejs
           npm install -g npm@11
