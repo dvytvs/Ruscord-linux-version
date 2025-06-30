@@ -34,7 +34,7 @@
         "snap"
       ],
       "icon": "assets/Images/icon.png",
-      "category": "Chat",
+      "category": "Network",
       "maintainer": "dvytvs <zapretsystem445@proton.me>",
       "synopsis": "Общайся и играй с друзьями в Ruscord",
       "asar": false
