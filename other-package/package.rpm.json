@@ -1,91 +1,91 @@
 {
-  "name": "Ruscord",
-  "version": "1.2.9",
-  "description": "Общайся и играй с друзьями в Ruscord",
-  "homepage": "https://github.com/dvytvs/Ruscord-linux-version",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron .",
-    "dist": "electron-builder",
-    "postinstall": "electron-builder install-app-deps"
-  },
-  "build": {
-    "appId": "ru.ruscord.dvytvs_xzy",
-    "productName": "Ruscord",
-    "copyright": "Copyright © 2025 dvytvs, XZY — неофициальный клиент Ruscord",
-    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-    "files": [
-      "main.js",
-      "package.json",
-      {
-        "from": "assets/",
-        "to": "assets",
-        "filter": ["**/*"]
-      },
-      "node_modules/**/*"
-    ],
-    "linux": {
-      "target": ["rpm"],
-      "icon": "assets/Images/icon.png",
-      "category": "Network",
-      "maintainer": "dvytvs <zapretsystem445@proton.me>",
-      "synopsis": "Общайся и играй с друзьями в Ruscord",
-      "asar": false,
-      "desktop": {
-        "entry": {
-          "Name": "Ruscord",
-          "Comment": "Общайся и играй с друзьями в Ruscord",
-          "Type": "Application",
-          "Categories": "Network;Chat;"
-        }
-      }
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": true,
-      "allowElevation": true
-    },
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "dvytvs",
-        "repo": "Ruscord-linux-version"
-      }
-    ]
-  },
-  "keywords": [
-    "ruscord",
-    "chat",
-    "messenger",
-    "russcord"
-  ],
-  "author": {
-    "name": "dvytvs, XZY",
-    "email": "zapretsystem445@proton.me",
-    "url": "https://github.com/dvytvs"
-  },
-  "license": "AGPLv3",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dvytvs/Ruscord-linux-version.git"
-  },
-  "bugs": {
-    "url": "https://github.com/dvytvs/Ruscord-linux-version/issues"
-  },
-  "dependencies": {
-    "electron-is-dev": "^3.0.1",
-    "electron-log": "^5.4.1",
-    "electron-store": "^10.1.0",
-    "electron-updater": "^6.6.2"
-  },
-  "devDependencies": {
-    "electron": "^22.3.27",
-    "electron-builder": "^26.0.12",
-    "eslint": "^8.56.0",
-    "typescript": "^5.3.3"
-  },
-  "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=11.0.0"
-  }
+  "name": "Ruscord",
+  "version": "1.2.9",
+  "description": "Общайся и играй с друзьями в Ruscord",
+  "homepage": "https://github.com/dvytvs/Ruscord-linux-version",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "ru.ruscord.dvytvs_xzy",
+    "productName": "Ruscord",
+    "copyright": "Copyright © 2025 dvytvs, XZY — неофициальный клиент Ruscord",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "files": [
+      "main.js",
+      "package.json",
+      {
+        "from": "assets/",
+        "to": "assets",
+        "filter": ["**/*"]
+      },
+      "node_modules/**/*"
+    ],
+    "linux": {
+      "target": ["rpm"],
+      "icon": "assets/Images/icon.png",
+      "category": "Network",
+      "maintainer": "dvytvs <zapretsystem445@proton.me>",
+      "synopsis": "Общайся и играй с друзьями в Ruscord",
+      "asar": false,
+      "desktop": {
+        "entry": {
+          "Name": "Ruscord",
+          "Comment": "Общайся и играй с друзьями в Ruscord",
+          "Type": "Application",
+          "Categories": "Network;Chat;"
+        }
+      }
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowElevation": true
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "dvytvs",
+        "repo": "Ruscord-linux-version"
+      }
+    ]
+  },
+  "keywords": [
+    "ruscord",
+    "chat",
+    "messenger",
+    "russcord"
+  ],
+  "author": {
+    "name": "dvytvs, XZY",
+    "email": "zapretsystem445@proton.me",
+    "url": "https://github.com/dvytvs"
+  },
+  "license": "AGPLv3",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dvytvs/Ruscord-linux-version.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dvytvs/Ruscord-linux-version/issues"
+  },
+  "dependencies": {
+    "electron-is-dev": "^3.0.1",
+    "electron-log": "^5.4.1",
+    "electron-store": "^10.1.0",
+    "electron-updater": "^6.6.2"
+  },
+  "devDependencies": {
+    "electron": "^22.3.27",
+    "electron-builder": "^26.0.12",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=11.0.0"
+  }
 }
