@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
@@ -168,7 +168,6 @@ async function checkForUpdates(window) {
     await downloadUpdate(window, updateUrl);
     sendStatus(window, 'Обновление загружено. Установка...');
     log('Обновление загружено успешно');
-    // Здесь можно добавить логику установки и замену файлов
   } catch (err) {
     sendStatus(window, `Ошибка загрузки: ${err.message}`);
     log(`Ошибка загрузки: ${err.message}`);
@@ -183,17 +182,16 @@ async function showSplash() {
     resizable: false,
     alwaysOnTop: true,
     backgroundColor: '#121212',
-    icon: path.join(__dirname, '../../Images/iconnobg.png'),
+    icon: path.join(__dirname, '../Images/iconnobg.png'),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      preload: path.join(__dirname, '../preload/splash-preload.js'),
+      preload: path.join(__dirname, 'splash-preload.js'),
     },
   });
 
   splash.loadFile(path.join(__dirname, '../html/splash.html'));
 
-  const { ipcMain } = require('electron');
   ipcMain.once('cancel-download', () => {
     cancelDownload();
   });
