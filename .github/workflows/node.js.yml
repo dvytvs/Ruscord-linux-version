@@ -61,7 +61,7 @@ jobs:
 
   build-fedora:
     name: Build-Fedora
-    runs-on: fedora-latest
+    runs-on: ubuntu-latest
     container:
       image: fedora:latest
     permissions:
