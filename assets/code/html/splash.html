@@ -56,6 +56,15 @@
       border-radius: 6px;
       transition: width 0.2s ease-out;
     }
+
+    #cancelBtn {
+      margin-top: 10px;
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      display: none;
+      -webkit-app-region: no-drag;
+    }
   </style>
 </head>
 <body>
@@ -64,39 +73,48 @@
   <div class="progress-wrapper">
     <div class="progress-bar"></div>
   </div>
+  <button id="cancelBtn">Отменить загрузку</button>
 
   <script>
     function formatBytes(bytes) {
-      const units = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ', 'ПТ']
-      let i = 0
-      let num = bytes
+      const units = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ', 'ПТ'];
+      let i = 0;
+      let num = bytes;
       while (num >= 1024 && i < units.length - 1) {
-        num /= 1024
-        i++
+        num /= 1024;
+        i++;
       }
-      return `${num.toFixed(1)} ${units[i]}`
+      return `${num.toFixed(1)} ${units[i]}`;
     }
+
+    const statusElem = document.getElementById('status');
+    const progressWrapper = document.querySelector('.progress-wrapper');
+    const progressBar = document.querySelector('.progress-bar');
+    const cancelBtn = document.getElementById('cancelBtn');
 
     if (window.electron) {
       window.electron.onStatus(text => {
-        const statusElem = document.getElementById('status')
-        statusElem.textContent = text
-        if (text === 'Запуск...') {
-          document.querySelector('.progress-wrapper').style.display = 'none'
+        statusElem.textContent = text;
+        if (text.includes('Скачано')) {
+          progressWrapper.style.display = 'block';
+          cancelBtn.style.display = 'inline-block';
+        } else if (text === 'Запуск...') {
+          progressWrapper.style.display = 'none';
+          cancelBtn.style.display = 'none';
         }
-      })
+      });
 
-      window.electron.onProgress((downloaded, total) => {
-        const wrapper = document.querySelector('.progress-wrapper')
-        const bar = document.querySelector('.progress-bar')
-        wrapper.style.display = 'block'
-        const percent = downloaded / total
-        bar.style.width = `${Math.min(100, percent * 100)}%`
-        const statusElem = document.getElementById('status')
-        statusElem.textContent = `Скачано ${formatBytes(downloaded)} из ${formatBytes(total)}`
-      })
+      window.electron.onProgress((downloaded, total, speed) => {
+        const percent = downloaded / total;
+        progressBar.style.width = `${Math.min(100, percent * 100)}%`;
+        statusElem.textContent = `Скачано ${formatBytes(downloaded)} из ${formatBytes(total)} (${formatBytes(speed)}/с)`;
+      });
+
+      cancelBtn.onclick = () => {
+        window.electron.send('cancel-download');
+      };
     } else {
-      document.getElementById('status').textContent = 'Ошибка preload.'
+      statusElem.textContent = 'Ошибка preload.';
     }
   </script>
 </body>
