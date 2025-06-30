@@ -70,7 +70,7 @@ jobs:
     steps:
       - name: Установка зависимостей
         run: |
-          dnf install -y curl git rpm rpm-build nodejs sudo libxcrypt-compat rpmdevtools
+          dnf install -y curl git rpm rpm-build nodejs sudo libxcrypt-compat rpmdevtools gtk3 libnotify nss libXScrnSaver libXtst xdg-utils at-spi2-core libuuid
 
       - name: Клонирование репозитория
         uses: actions/checkout@v4
