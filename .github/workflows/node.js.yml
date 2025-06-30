@@ -5,7 +5,6 @@ on:
 
 jobs:
   build-debian:
-    name: Build-Debian
     runs-on: ubuntu-latest
     container:
       image: debian:bullseye
@@ -16,7 +15,7 @@ jobs:
       - name: Установка зависимостей
         run: |
           apt-get update
-          apt-get install -y curl git ca-certificates binutils sudo libarchive-tools rpm libcrypt1
+          apt-get install -y curl git ca-certificates binutils sudo rpm libarchive-tools
           curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
           apt-get install -y nodejs
 
@@ -27,68 +26,49 @@ jobs:
         run: |
           npm install -g npm@11
           if [ -f package-lock.json ]; then
+            echo "Используем npm ci"
             npm ci
           else
+            echo "package-lock.json не найден, запускаем npm install"
             npm install
           fi
 
-      - name: Сборка Debian-артефактов (без rpm)
-        run: npx electron-builder --linux deb snap AppImage tar.xz --x64 --publish=never
+      - name: Сборка приложения
+        run: npx electron-builder --linux --x64 --publish=never
 
-      - name: Загрузка .deb
+      - name: Загрузка артефактов (.deb)
         uses: actions/upload-artifact@v4
         with:
           name: Ruscord-deb
           path: dist/*.deb
 
-      - name: Загрузка .snap
+      - name: Загрузка артефактов (.rpm)
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord-snap
-          path: dist/*.snap
+          name: Ruscord-rpm
+          path: dist/*.rpm
 
-      - name: Загрузка .AppImage
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-appimage
-          path: dist/*.AppImage
-
-      - name: Загрузка .tar.xz
+      - name: Загрузка артефактов (.tar.xz)
         uses: actions/upload-artifact@v4
         with:
           name: Ruscord-tarxz
           path: dist/*.tar.xz
 
-  build-fedora:
-    name: Build-Fedora
-    runs-on: ubuntu-latest
-    container:
-      image: fedora:latest
-    permissions:
-      contents: read
-
-    steps:
-      - name: Установка зависимостей
-        run: |
-          dnf install -y curl git rpm rpm-build nodejs sudo libxcrypt-compat rpmdevtools gtk3 libnotify nss libXScrnSaver libXtst xdg-utils at-spi2-core libuuid
-
-      - name: Клонирование репозитория
-        uses: actions/checkout@v4
-
-      - name: Установка npm-зависимостей
-        run: |
-          npm install -g npm@11
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
-
-      - name: Сборка RPM
-        run: npx electron-builder --linux rpm --x64 --publish=never
-
-      - name: Загрузка .rpm
+      - name: Загрузка артефактов (.snap)
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord-rpm
-          path: dist/*.rpm
+          name: Ruscord-snap
+          path: dist/*.snap
+
+      - name: Загрузка артефактов (.AppImage)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-appimage
+          path: dist/*.AppImage
+
+      - name: Загрузка артефактов (.pacman)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-pacman
+          path: dist/*.pacman
+          
