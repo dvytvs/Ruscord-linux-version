@@ -12,24 +12,30 @@ jobs:
       contents: read
 
     steps:
-      - name: Установка зависимостей
-        run: |
-          apt-get update
-          apt-get install -y curl git ca-certificates binutils sudo rpm libarchive-tools
-          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-          apt-get install -y nodejs
-
       - name: Клонирование репозитория
         uses: actions/checkout@v4
 
+      - name: Кэш npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Установка зависимостей (Debian)
+        run: |
+          apt-get update
+          apt-get install -y curl git ca-certificates binutils sudo libarchive-tools
+          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+          apt-get install -y nodejs
+          npm install -g npm@11
+
       - name: Установка npm-зависимостей
         run: |
-          npm install -g npm@11
           if [ -f package-lock.json ]; then
-            echo "Используем npm ci"
             npm ci
           else
-            echo "package-lock.json не найден, запускаем npm install"
             npm install
           fi
 
@@ -41,12 +47,6 @@ jobs:
         with:
           name: Ruscord-deb
           path: dist/*.deb
-
-      - name: Загрузка артефактов (.rpm)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-rpm
-          path: dist/*.rpm
 
       - name: Загрузка артефактов (.tar.xz)
         uses: actions/upload-artifact@v4
@@ -71,4 +71,49 @@ jobs:
         with:
           name: Ruscord-pacman
           path: dist/*.pacman
-          
+
+  build-fedora:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Клонирование репозитория
+        uses: actions/checkout@v4
+
+      - name: Подмена package.json на rpm-версию
+        run: mv other-package/package.rpm.json package.json
+
+      - name: Кэш npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Установка зависимостей (Fedora)
+        run: |
+          dnf install -y curl git ca-certificates binutils sudo rpm libarchive
+          curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
+          dnf install -y nodejs
+          npm install -g npm@11
+
+      - name: Установка npm-зависимостей
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Сборка RPM
+        run: npm run dist
+
+      - name: Загрузка .rpm
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ruscord-rpm-fedora
+          path: dist/*.rpm
