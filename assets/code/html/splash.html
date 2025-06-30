@@ -16,6 +16,7 @@
       justify-content: center;
       height: 100vh;
       user-select: none;
+      -webkit-app-region: drag;
     }
 
     .icon {
@@ -23,6 +24,7 @@
       height: 120px;
       margin-bottom: 20px;
       animation: heartbeat 1.5s infinite;
+      -webkit-app-region: no-drag;
     }
 
     @keyframes heartbeat {
@@ -34,6 +36,7 @@
       font-size: 16px;
       margin-bottom: 20px;
       text-align: center;
+      -webkit-app-region: no-drag;
     }
 
     .progress-wrapper {
@@ -43,6 +46,7 @@
       border-radius: 6px;
       overflow: hidden;
       display: none;
+      -webkit-app-region: no-drag;
     }
 
     .progress-bar {
@@ -92,7 +96,7 @@
         statusElem.textContent = `Скачано ${formatBytes(downloaded)} из ${formatBytes(total)}`
       })
     } else {
-      document.getElementById('status').textContent = 'Ошибка preload.';
+      document.getElementById('status').textContent = 'Ошибка preload.'
     }
   </script>
 </body>
