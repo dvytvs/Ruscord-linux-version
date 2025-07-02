@@ -12,10 +12,14 @@ jobs:
       contents: read
 
     steps:
-      - name: Установка зависимостей
+      - name: Обновление списка пакетов и установка базовых зависимостей с фиксом недостающих
         run: |
           apt-get update
-          apt-get install -y curl git ca-certificates binutils sudo rpm libarchive-tools
+          apt-get install -y --fix-missing curl git ca-certificates binutils sudo rpm libarchive-tools
+          apt-get install -f --fix-missing
+
+      - name: Установка Node.js
+        run: |
           curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
           apt-get install -y nodejs
 
@@ -71,4 +75,3 @@ jobs:
         with:
           name: Ruscord-pacman
           path: dist/*.pacman
-          
