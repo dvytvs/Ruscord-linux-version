@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
@@ -123,6 +123,7 @@ function downloadUpdate(window, url) {
           lastDownloaded = downloaded;
         }
         sendProgress(window, downloaded, total, speed);
+
         sendStatus(window, `Скачано ${formatBytes(downloaded)} из ${formatBytes(total)} (${formatBytes(speed)}/с)`);
       });
 
@@ -139,6 +140,16 @@ function downloadUpdate(window, url) {
 
     downloadReq.on('error', err => reject(err));
   });
+}
+
+function cancelDownload() {
+  if (!downloadCancelled) {
+    downloadCancelled = true;
+    if (downloadReq) {
+      downloadReq.destroy();
+      downloadReq = null;
+    }
+  }
 }
 
 async function checkForUpdates(window) {
@@ -182,6 +193,10 @@ async function showSplash() {
   });
 
   splash.loadFile(path.join(__dirname, '../html/splash.html'));
+
+  ipcMain.once('cancel-download', () => {
+    cancelDownload();
+  });
 
   await waitForInternet(splash);
   await checkForUpdates(splash);
