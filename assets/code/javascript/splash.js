@@ -192,10 +192,6 @@ async function showSplash() {
 
   splash.loadFile(path.join(__dirname, '../html/splash.html'));
 
-  ipcMain.once('cancel-download', () => {
-    cancelDownload();
-  });
-
   await waitForInternet(splash);
   await checkForUpdates(splash);
   sendStatus(splash, 'Запуск...');
