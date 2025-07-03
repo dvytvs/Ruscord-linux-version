@@ -32,7 +32,9 @@ XZY123lol и dvytvs сделали для вас отдельный клиент
 - [Примечание](https://github.com/dvytvs/Ruscord-linux-version/edit/main/README.md#%D0%BF%D1%80%D0%B8%D0%BC%D0%B5%D1%87%D0%B0%D0%BD%D0%B8%D0%B5)
 
 ## Использование
-Если хотите форкнуть и переделать клиент то пожалуйста мы не против этого мы также оставили инструкцию ниже будем рады какие фишки вы добавили в него! (Только перед тем как выложить соблюдайте лицензию GNU AGPLv3 также используйте его)
+Если хотите форкнуть и переработать клиент — пожалуйста, мы не против этого. Мы также оставили инструкцию ниже, будем рады услышать, какие фишки вы туда добавите!
+
+Важно: Перед публикацией своего форка обязательно соблюдайте условия лицензии GNU AGPLv3.
 
 ```
 git clone https://github.com/dvytvs/Ruscord-linux-version.git
@@ -49,6 +51,6 @@ npm install electron electron-builder electron-store electron-updater electron-l
 ## Примечание
 ![AGPLv3.png](https://github.com/dvytvs/Ruscord-linux-version/blob/main/.github/images/AGPLv3.png)
 
-Эта программа является свободным программным обеспечением: вы можете распространять и/или изменять его в соответствии с условиями лицензии [GNU Affero General Public License версии 3.0](https://github.com/dvytvs/Ruscord-linux-version/blob/main/LICENSE) или поздней версии, опубликованной Фондом свободного программного обеспечения.
+Эта программа является свободным программным обеспечением: вы можете распространять или изменять его в соответствии с условиями лицензии [GNU Affero General Public License версии 3.0](https://github.com/dvytvs/Ruscord-linux-version/blob/main/LICENSE) или поздней версии, опубликованной Фондомом свободного программного обеспечения (Open source).
 
 Ruscord linux version не управляется организацией "Ruscord".
