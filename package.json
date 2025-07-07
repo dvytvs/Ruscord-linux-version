@@ -1,68 +1,68 @@
 {
-  "name": "Ruscord",
-  "version": "1.2.9",
-  "description": "Общайся и играй с друзьями в Ruscord",
-  "homepage": "https://github.com/dvytvs/Ruscord-MacOS-version",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron .",
-    "dist": "electron-builder -m",
-    "pack": "electron-builder --dir",
-    "postinstall": "electron-builder install-app-deps"
-  },
-  "build": {
-    "appId": "ru.ruscord.dvytvs_XZY",
-    "productName": "Ruscord",
-    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-    "asar": false,
-    "files": [
-      "main.js",
-      "about.html",
-      "assets/**/*"
-    ],
-    "mac": {
-      "target": ["dmg", "zip"],
-      "icon": "assets/icon.icns",
-      "category": "public.app-category.social-networking",
-      "darkModeSupport": true
-    },
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "XZY123lol",
-        "repo": "Ruscord-MacOS-version"
-      }
-    ]
-  },
-  "author": {
-    "name": "dvytvs, XZY",
-    "email": "xzywww@proton.me"
-  },
-  "license": "AGPLv3",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dvytvs/Ruscord-MacOS-version.git"
-  },
-  "bugs": {
-    "url": "https://github.com/dvytvs/Ruscord-MacOS-version/issues"
-  },
-  "keywords": [
-    "ruscord",
-    "chat",
-    "messenger",
-    "russcord"
-  ],
-  "engines": {
-    "node": ">=20.0.0"
-  },
-  "devDependencies": {
-    "electron": "^22.3.27",
-    "electron-builder": "^26.3.0"
-  },
-  "dependencies": {
-    "electron-is-dev": "^3.0.1",
-    "electron-log": "^6.2.1",
-    "electron-store": "^10.0.3",
-    "electron-updater": "^6.7.0"
-  }
+  "name": "Ruscord",
+  "version": "1.2.9",
+  "description": "Общайся и играй с друзьями в Ruscord",
+  "homepage": "https://github.com/dvytvs/Ruscord-MacOS-version",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder -m",
+    "pack": "electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "ru.ruscord.dvytvs_XZY",
+    "productName": "Ruscord",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "asar": false,
+    "files": [
+      "main.js",
+      "about.html",
+      "assets/**/*"
+    ],
+    "mac": {
+      "target": ["dmg", "zip"],
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.social-networking",
+      "darkModeSupport": true
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "XZY123lol",
+        "repo": "Ruscord-MacOS-version"
+      }
+    ]
+  },
+  "author": {
+    "name": "dvytvs, XZY",
+    "email": "xzywww@proton.me"
+  },
+  "license": "AGPLv3",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dvytvs/Ruscord-MacOS-version.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dvytvs/Ruscord-MacOS-version/issues"
+  },
+  "keywords": [
+    "ruscord",
+    "chat",
+    "messenger",
+    "russcord"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "electron": "^22.3.27",
+    "electron-builder": "^26.3.0"
+  },
+  "dependencies": {
+    "electron-is-dev": "^3.0.1",
+    "electron-log": "^6.2.1",
+    "electron-store": "^10.0.3",
+    "electron-updater": "^6.7.0"
+  }
 }
