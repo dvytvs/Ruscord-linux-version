@@ -1,79 +1,35 @@
-name: Ruscord Node.js CI Linux Build
+name: Ruscord Build
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  build-debian:
-    runs-on: ubuntu-latest
-    container:
-      image: debian:bullseye
-    permissions:
-      contents: read
+  build:
+    runs-on: macos-latest
 
     steps:
-      - name: Установить зависимости в контейнер
-        run: |
-          apt-get update
-          apt-get install -y curl git ca-certificates binutils sudo rpm libarchive-tools
-          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-          apt-get install -y nodejs
-
-      - name: Checkout кода
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Установка зависимостей
-        run: |
-          npm install -g npm@11
-          if [ -f package-lock.json ]; then
-            echo "Using npm ci"
-            npm ci
-          else
-            echo "No package-lock.json found, running npm install"
-            npm install
-          fi
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
+      - name: Install dependencies
+        run: npm install
 
-      # --- Билд для x64 ---
-      - name: Билд для x64
-        run: |
-          npx electron-builder --linux --x64 --publish=never
+      - name: Build macOS App
+        run: npm run dist
 
-      - name: Загрузка артефактов x64 (.deb)
+      - name: Upload artifact (.dmg)
         uses: actions/upload-artifact@v4
         with:
-          name: Ruscord-x64-deb
-          path: dist/*.deb
-
-      - name: Загрузка артефактов x64 (.rpm)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-x64-rpm
-          path: dist/*.rpm
-
-      - name: Загрузка артефактов x64 (.tar.xz)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-x64-tarxz
-          path: dist/*.tar.xz
-
-      - name: Загрузка артефактов x64 (.snap)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-x64-snap
-          path: dist/*.snap
-
-      - name: Загрузка артефактов x64 (.AppImage)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-x64-appimage
-          path: dist/*.AppImage
-
-      - name: Загрузка артефактов x64 (.pacman)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-x64-pacman
-          path: dist/*.pacman
-
-      - name: Очистка dist перед ia32
-        run: rm -rf dist/*
+          name: Ruscord-macOS
+          path: |
+            dist/*.dmg
+            dist/*.zip
