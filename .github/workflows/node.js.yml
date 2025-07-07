@@ -15,13 +15,19 @@ jobs:
       - name: Обновление списка пакетов и установка базовых зависимостей с фиксом недостающих
         run: |
           apt-get update
-          apt-get install -y --fix-missing curl git ca-certificates binutils sudo rpm libarchive-tools flatpak flatpak-builder
+          apt-get install -y --fix-missing curl git ca-certificates binutils sudo rpm libarchive-tools flatpak flatpak-builder fakeroot elfutils bubblewrap
           apt-get install -f --fix-missing
 
       - name: Установка Node.js
         run: |
           curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
           apt-get install -y nodejs
+
+      - name: Flatpak расширения
+        run: flatpak install flathub org.freedesktop.Platform//21.08 && flatpak install flathub org.freedesktop.Sdk//21.08 && which flatpak && which flatpak-builder && which bubblewrap
+
+
+
 
       - name: Клонирование репозитория
         uses: actions/checkout@v4
