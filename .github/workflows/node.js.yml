@@ -15,16 +15,13 @@ jobs:
       - name: Обновление списка пакетов и установка базовых зависимостей с фиксом недостающих
         run: |
           apt-get update
-          apt-get install -y --fix-missing curl git ca-certificates binutils sudo rpm libarchive-tools flatpak flatpak-builder fakeroot elfutils bubblewrap
+          apt-get install -y --fix-missing curl git ca-certificates binutils sudo rpm libarchive-tools
           apt-get install -f --fix-missing
 
       - name: Установка Node.js
         run: |
           curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
           apt-get install -y nodejs
-
-      - name: Flatpak настройка
-        run: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && flatpak install -y flathub org.freedesktop.Platform//21.08 && flatpak install -y flathub org.freedesktop.Sdk//21.08 && which flatpak && which flatpak-builder && which bubblewrap
 
       - name: Клонирование репозитория
         uses: actions/checkout@v4
@@ -78,9 +75,3 @@ jobs:
         with:
           name: Ruscord-pacman
           path: dist/*.pacman
-
-      - name: Загрузка артефактов (.flatpak)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ruscord-flatpak
-          path: dist/*.flatpak
