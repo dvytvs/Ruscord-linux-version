@@ -1,4 +1,4 @@
-name: Ruscord Node.js CI Linux Build
+name: Ruscord Build
 
 on:
   workflow_dispatch:
