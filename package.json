@@ -31,7 +31,8 @@
         "pacman",
         "tar.xz",
         "AppImage",
-        "snap"
+        "snap",
+        "flatpak"
       ],
       "icon": "assets/Images/icon.png",
       "category": "Network",
