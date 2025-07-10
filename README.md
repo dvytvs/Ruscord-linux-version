@@ -1,6 +1,6 @@
 ## RCLinux
 <p align="center">
-  <a href="https://github.com/dvytvs/Ruscord-linux-version/.github/images/logo.jpg">
+  <img src="https://github.com/dvytvs/Ruscord-linux-version/.github/images/logo.jpg" alt="logo.jpg" />
   </a>
 </p>
 <p align="center">
