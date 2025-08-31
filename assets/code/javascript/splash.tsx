@@ -189,7 +189,7 @@ async function showSplash() {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      preload: path.join(__dirname, 'splash-preload.js'),
+      preload: path.join(__dirname, 'splash-preload.tsx'),
     },
   });
 
