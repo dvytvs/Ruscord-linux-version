@@ -3,9 +3,10 @@
   "version": "1.2.9",
   "description": "Общайся и играй с друзьями в Ruscord",
   "homepage": "https://github.com/dvytvs/Ruscord-linux-version",
-  "main": "main.js",
+  "main": "dist/main.ts",
   "scripts": {
-    "start": "electron .",
+    "start": "tsc && electron .",
+    "build-renderer": "tsc",
     "dist": "npm run build-renderer && electron-builder",
     "postinstall": "electron-builder install-app-deps"
   },
@@ -15,8 +16,7 @@
     "copyright": "Copyright © 2025 dvytvs, XZY — неофициальный клиент Ruscord",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
-      "main.js",
-      "package.json",
+      "dist/**/*",
       {
         "from": "assets/",
         "to": "assets",
@@ -30,6 +30,7 @@
         "rpm",
         "pacman",
         "tar.xz",
+        "tar.gz",
         "AppImage",
         "snap"
       ],
@@ -81,7 +82,9 @@
     "electron": "^22.3.27",
     "electron-builder": "^26.0.12",
     "eslint": "^8.56.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "@types/node": "^20.5.1",
+    "@types/electron": "^22.0.0"
   },
   "engines": {
     "node": ">=20.0.0",
