@@ -1,6 +1,6 @@
 const { app, BrowserWindow, Menu, shell } = require('electron');
 const path = require('path');
-const { showSplash } = require('./assets/code/javascript/splash.js');
+const { showSplash } = require('./assets/code/javascript/splash.tsx');
 
 let splashWindow;
 let mainWindow;
