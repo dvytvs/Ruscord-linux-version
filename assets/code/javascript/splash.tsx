@@ -162,6 +162,7 @@ async function checkForUpdates(window) {
     case 'pacman': assetName = 'Ruscord.pacman'; break;
     case 'snap': assetName = 'Ruscord.snap'; break;
     case 'tar.xz': assetName = 'Ruscord.tar.xz'; break;
+    case 'tar.gz': assetName = 'Ruscord.tar.gz'; break;
     default: assetName = 'Ruscord.tar.xz';
   }
   const updateUrl = `https://github.com/dvytvs/Ruscord-linux-version/releases/latest/download/${assetName}`;
