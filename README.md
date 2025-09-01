@@ -98,4 +98,4 @@ npm install electron electron-builder electron-store electron-updater electron-l
 
 Эта программа является свободным программным обеспечением: вы можете распространять или изменять его в соответствии с условиями лицензии [GNU Affero General Public License версии 3.0](https://github.com/dvytvs/Ruscord-linux-version/blob/main/LICENSE) или поздней версии, опубликованной Фондом свободного программного обеспечения (Open source).
 
-Ruscord linux version не управляется организацией [Ruscord](https://www.russcord.ru)
+Ruscord linux version не управляется организацией [Ruscord](https://www.russcord.ru), но получил [одобрение.](https://t.me/russcords/254)
