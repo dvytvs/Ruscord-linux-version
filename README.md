@@ -1,6 +1,6 @@
 # Russcord
 
-Russcord - официальный десктопный клиент для Windows, macOS и Linux  
+Russcord - не официальный десктопный клиент для Linux  
 Приложение для общения в формате серверов, каналов, текста и голоса
 
 Это самостоятельный продукт со своей экосистемой и развитием внутри проекта Russcord
@@ -32,36 +32,24 @@ Russcord подойдёт если вы
 ---
 
 ## 📸 Интерфейс
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/547a02fb-ceea-467f-8134-4d20c5df2916" width="48%" style="border-radius:16px; display:inline-block;" />
-  <img src="https://github.com/user-attachments/assets/f6af4307-a541-4093-81d2-3aea7114e9af" width="48%" style="border-radius:16px; display:inline-block;" />
-</p>
+<img width="1915" height="1038" alt="Снимок экрана от 2026-05-03 19-33-13" src="https://github.com/user-attachments/assets/0afbc6c1-b947-44c8-8957-56719dc4771b" />
 
 ## 📥 Установка
 
-Скачайте последнюю версию под свою систему
-
-🪟 Windows — `.exe`  
-🍎 macOS — `.dmg`  
-🐧 Linux — `.AppImage`  
+Скачайте последнюю версию 
+ Есть версии для всех дистрибутивов. Для удобства есть flatpak и AppImage
 
 Рекомендуется скачивать только с официальных релизов
 
 👉 https://github.com/ruscord/ruscord-electron-communities/releases
 
+Но конкретно этот именно от сюда. Версия для ARM зедесь - https://github.com/ruscord/russcord-app.git
+
 ---
 
 ## ⚠️ Если что-то не работает
 
-🪟 Windows  
-Проверьте, что файл скачан полностью. Антивирус может блокировать новые приложения
-
-🍎 macOS  
-При первом запуске может появиться предупреждение безопасности
-
-🐧 Linux  
-Проверьте права на запуск файла
+Пожалуйста, проверьте права на запуск программы. Если же не работает, отправьте запуск из терминала ва Issues 
 
 ---
 
@@ -72,4 +60,11 @@ Russcord - независимое приложение
 
 ## 📄 Лицензия
 
-Проект распространяется под лицензией **MIT License**
+Проект распространяется под лицензией GNU GENERAL PUBLIC LICENSE, а именно GPLv3
+
+
+## ⚠️  ВНИМАНИЕ!!!
+
+Разработчик dvytvs не берёт на себя ответственность за работу самого сервиса. Все вопросы в поддержку самого Ruscrod - @supruscord_bot
+
+Канал самого Ruscord - https://t.me/russcord
